@@ -49,7 +49,7 @@ export function StudioScene({ view, lang, activeSkillId, coffee, onNavigate, onS
   if (!supported) return null
 
   return (
-    <div className="scene" aria-hidden="true" style={{ position: 'absolute', inset: 0 }}>
+    <div className="scene" aria-hidden="true">
       <SceneBoundary>
         <Canvas
           frameloop="demand"

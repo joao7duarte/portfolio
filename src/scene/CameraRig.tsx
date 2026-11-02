@@ -38,7 +38,7 @@ const rot = (hx: number, hy: number, hz: number, a: number) =>
 const DESK_FULL_H = DESK_TOP + 1.2
 
 const SPECS: Record<View, Spec> = {
-  desk: { center: v(0, DESK_FULL_H / 2, 0), half: v(1.7, DESK_FULL_H / 2, 0.7), dir: v(0.5, 0.5, 1), pad: 1.22, padNarrow: 0.98, panel: false },
+  desk: { center: v(0, DESK_FULL_H / 2, 0), half: v(1.7, DESK_FULL_H / 2, 0.7), dir: v(0.5, 0.5, 1), pad: 1.22, padNarrow: 1.0, panel: false },
   projects: { center: v(MONITOR_POS[0], MONITOR_POS[1] + 0.72, MONITOR_POS[2] + 0.03), half: v(0.8, 0.475, 0.03), dir: v(0.08, 0.03, 1), pad: 1.06, panel: false },
   skills: { center: at(KEYBOARD_POS, 0.03), half: v(0.9, 0.03, 0.3), dir: v(0, 1, 0.3), pad: 1.3, panel: true },
   experience: { center: at(NOTEBOOK_POS, 0.03), half: rot(0.25, 0.03, 0.33, NOTEBOOK_ROT), dir: v(0, 1, 0.3), pad: 1.5, minSize: 1.0, panel: true },

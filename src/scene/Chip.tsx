@@ -8,7 +8,7 @@ const tmp = new Vector3()
 /** Chip width as a fraction of camera distance, so every chip has the same apparent size. */
 const SIZE = 0.062
 /** Portrait phones are narrow, so the same fraction would take up too much of the screen. */
-const SIZE_PORTRAIT = 0.05
+const SIZE_PORTRAIT = 0.04
 const PORTRAIT_ASPECT = 0.75
 
 /** Small quiet label that tells visitors an object is clickable. Drawn with a canvas, no fonts fetched. */

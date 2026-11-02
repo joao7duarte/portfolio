@@ -12,7 +12,8 @@
 
   font-family: 'Schibsted Grotesk', system-ui, sans-serif;
   color: var(--graphite);
-  background: var(--plaster);
+  /* The wall as rendered, so any area the scene can't paint blends with the room */
+  background: #d4b68f;
 }
 
 * {
@@ -37,7 +38,19 @@ body {
 .app {
   position: relative;
   height: 100dvh;
-  overflow: hidden;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+}
+
+/* On touch screens the room carries on behind the browser's status and bottom bars */
+@media (hover: none) and (pointer: coarse) {
+  .scene {
+    position: fixed;
+    inset: -120px 0;
+  }
 }
 
 :focus-visible {
