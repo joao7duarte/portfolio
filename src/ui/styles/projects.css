@@ -1,0 +1,205 @@
+/* Fake desktop OS */
+
+.ov-os {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--graphite);
+  animation: ov-fade 0.35s ease-out 0.5s backwards;
+}
+
+.ov-os-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: clamp(0.75rem, 3vw, 2rem);
+}
+
+.ov-wins {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  max-width: 62rem;
+  margin: 0 auto;
+}
+
+.ov-win {
+  position: relative;
+  min-width: 0;
+  background: var(--paper);
+  border: 2px solid var(--graphite-soft);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px #000;
+}
+
+.ov-win.ov-front {
+  border-color: var(--accent);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.45);
+}
+
+.ov-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.5rem;
+  background: var(--graphite-soft);
+  color: var(--paper);
+}
+
+.ov-front .ov-titlebar {
+  background: var(--accent);
+}
+
+.ov-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.ov-dots i {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--paper);
+  border-radius: 50%;
+}
+
+.ov-wintitle {
+  flex: 1;
+  min-width: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.ov-wintitle button {
+  all: unset;
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  padding: 0.65rem 0.25rem;
+  cursor: pointer;
+}
+
+.ov-wintitle button:focus-visible {
+  outline: 3px solid var(--paper);
+  outline-offset: -3px;
+}
+
+.ov-winbody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.ov-wintext {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.ov-shot {
+  margin: 0;
+  width: 100%;
+  max-width: 22rem;
+}
+
+.ov-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1.5px solid var(--graphite-soft);
+}
+
+@media (min-width: 900px) {
+  .ov-winbody {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+
+  .ov-shot {
+    flex: 0 0 20rem;
+  }
+}
+
+.ov-shot figcaption {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--graphite-soft);
+}
+
+.ov-summary {
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.35;
+  max-width: 60ch;
+}
+
+.ov-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 60ch;
+}
+
+.ov-facts dt {
+  font-weight: 700;
+}
+
+.ov-facts dd {
+  color: var(--graphite);
+}
+
+.ov-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ov-tag {
+  padding: 0.2rem 0.6rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: var(--plaster);
+  border: 1px solid var(--graphite-soft);
+  border-radius: 2px;
+}
+
+.ov-tag-on {
+  color: var(--paper);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.ov-taskbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem clamp(0.75rem, 3vw, 2rem);
+  background: var(--paper);
+  border-bottom: 2px solid var(--graphite-soft);
+}
+
+
+@media (max-width: 600px) {
+  .ov-taskbar {
+    gap: 0.25rem;
+    padding: 0.375rem 0.5rem;
+  }
+
+  .ov-taskbar .ov-btn {
+    min-height: 36px;
+    padding: 0 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  /* Back and language share the first line, sections take the second */
+  .ov-taskbar nav {
+    order: 1;
+    width: 100%;
+  }
+}

@@ -1,0 +1,115 @@
+.ov-btn {
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  color: var(--graphite);
+  background: var(--paper);
+  border: 1.5px solid var(--graphite);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.ov-btn:hover {
+  background: #fff;
+}
+
+.ov-btn[aria-current='page'] {
+  color: var(--paper);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.ov-solid {
+  color: var(--paper);
+  background: var(--graphite);
+}
+
+.ov-solid:hover {
+  background: #000;
+}
+
+.ov-navlist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ov-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  overflow-wrap: anywhere;
+}
+
+.ov-link:hover {
+  text-decoration-thickness: 3px;
+}
+
+.ov-solidlink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.2rem;
+  color: var(--paper);
+  background: var(--accent);
+  text-decoration: none;
+  border-radius: 2px;
+  align-self: flex-start;
+}
+
+.ov-solidlink:hover {
+  background: #174638;
+}
+
+/* Language switch */
+
+.ov-lang {
+  display: inline-flex;
+  flex: none;
+}
+
+.ov-lang button {
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 44px;
+  min-height: 36px;
+  padding: 0 0.5rem;
+  color: var(--graphite);
+  background: var(--paper);
+  border: 1px solid var(--graphite-soft);
+  cursor: pointer;
+}
+
+.ov-lang button + button {
+  margin-left: -1px;
+}
+
+.ov-lang button:hover {
+  background: #fff;
+}
+
+.ov-lang button[aria-pressed='true'] {
+  color: var(--paper);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.ov-deskLang {
+  position: absolute;
+  top: clamp(1.25rem, 4vw, 3.5rem);
+  right: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+/* Back to desk: top left of the screen, over the 3D scene */
+
+.ov-back-corner {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.75rem;
+  z-index: 1;
+}

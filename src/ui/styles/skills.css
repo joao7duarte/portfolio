@@ -1,0 +1,62 @@
+/* Skills */
+
+.ov-skilllist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ov-skill {
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 0 1rem;
+  color: var(--graphite);
+  background: var(--paper);
+  border: 1.5px solid var(--plaster-deep);
+  border-bottom-color: var(--graphite);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.ov-skill:hover {
+  background: #fff;
+  border-color: var(--graphite);
+}
+
+.ov-skill[aria-pressed='true'] {
+  color: var(--paper);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.ov-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  max-width: 60ch;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--plaster-deep);
+}
+
+.ov-detail h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.ov-detail h3 {
+  margin-top: 0.5rem !important;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.ov-plain li {
+  padding: 0.15rem 0;
+}
+
+.ov-muted {
+  color: var(--graphite-soft);
+}

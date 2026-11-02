@@ -1,0 +1,18 @@
+/* Contact */
+
+.ov-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ov-contact dt {
+  font-size: 0.95rem;
+  color: var(--graphite-soft);
+}
+
+.ov-contact dd {
+  font-size: 1.3rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}

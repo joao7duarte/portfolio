@@ -1,0 +1,49 @@
+/* Desk */
+
+.ov-identity {
+  position: absolute;
+  top: clamp(1.25rem, 4vw, 3.5rem);
+  left: clamp(1.25rem, 4vw, 3.5rem);
+  right: clamp(1.25rem, 4vw, 3.5rem);
+  max-width: 34rem;
+}
+
+.ov-identity h1 {
+  font-size: clamp(2.5rem, 7vw, 5.25rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.ov-headline {
+  margin-top: 1rem !important;
+  max-width: 26ch;
+  font-size: clamp(1.2rem, 2.6vw, 1.9rem);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.ov-hint {
+  margin-top: 1.25rem !important;
+  max-width: 30ch;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--graphite);
+}
+
+.ov-deskNav .ov-btn {
+  min-height: 40px;
+  padding: 0 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-width: 1px;
+  border-color: var(--graphite-soft);
+}
+
+.ov-deskNav {
+  position: absolute;
+  left: clamp(1.25rem, 4vw, 3.5rem);
+  right: clamp(1.25rem, 4vw, 3.5rem);
+  bottom: clamp(1rem, 3vw, 2.5rem);
+}

@@ -1,0 +1,56 @@
+/* Experience */
+
+.ov-timeline {
+  border-left: 2px solid var(--graphite);
+  margin-left: 0.4rem !important;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 60ch;
+}
+
+.ov-timeline li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.ov-timeline li::before {
+  content: '';
+  position: absolute;
+  left: -0.5rem;
+  top: 0.55rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  background: var(--graphite);
+  border: 2px solid var(--paper);
+}
+
+.ov-timeline h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.ov-jobtitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 0.15rem !important;
+}
+
+.ov-period {
+  color: var(--graphite-soft);
+  margin: 0.1rem 0 0.6rem !important;
+}
+
+.ov-subhead {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.ov-timeline h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.25;
+}

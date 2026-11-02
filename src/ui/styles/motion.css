@@ -1,0 +1,33 @@
+/* Motion, only after an action */
+
+@keyframes ov-fade {
+  from {
+    opacity: 0;
+    visibility: hidden;
+  }
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@keyframes ov-rise {
+  from {
+    transform: translateY(1.5rem);
+    opacity: 0;
+  }
+}
+
+@keyframes ov-slide {
+  from {
+    transform: translateX(1.5rem);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ov-os,
+  .ov-panel {
+    animation: none;
+  }
+}

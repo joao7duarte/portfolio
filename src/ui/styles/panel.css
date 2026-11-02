@@ -1,0 +1,80 @@
+/* Side / bottom panel */
+
+.ov-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border-top: 2px solid var(--graphite);
+  animation: ov-rise 0.28s ease-out;
+}
+
+@media (min-width: 900px) and (min-aspect-ratio: 1/1) {
+  .ov-panel {
+    left: auto;
+    top: 0;
+    height: auto;
+    width: 40%;
+    min-width: 26rem;
+    border-top: 0;
+    border-left: 2px solid var(--graphite);
+    animation-name: ov-slide;
+  }
+}
+
+.ov-panel-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--plaster-deep);
+}
+
+.ov-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem clamp(1rem, 3vw, 2.25rem) 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ov-panel-body > h1 {
+  font-size: clamp(1.9rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+/* Compact panel bar: quiet text-style section links */
+.ov-panel-bar .ov-navlist {
+  gap: 0;
+}
+
+.ov-panel-bar .ov-navlist .ov-btn {
+  min-height: 36px;
+  padding: 0 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--graphite);
+  background: transparent;
+  border-color: transparent;
+}
+
+.ov-panel-bar .ov-navlist .ov-btn:hover {
+  text-decoration: underline;
+}
+
+.ov-panel-bar .ov-navlist .ov-btn[aria-current='page'] {
+  color: var(--accent);
+  background: transparent;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
