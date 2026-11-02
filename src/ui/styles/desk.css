@@ -15,21 +15,21 @@
   letter-spacing: -0.035em;
 }
 
+.ov-role {
+  margin-top: 0.5rem !important;
+  font-size: clamp(1.35rem, 3vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
 .ov-headline {
-  margin-top: 1rem !important;
+  margin-top: 0.75rem !important;
   max-width: 26ch;
   font-size: clamp(1.2rem, 2.6vw, 1.9rem);
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: -0.01em;
-}
-
-.ov-hint {
-  margin-top: 1.25rem !important;
-  max-width: 30ch;
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--graphite);
 }
 
 .ov-deskNav .ov-btn {

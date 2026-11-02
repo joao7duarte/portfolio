@@ -2,6 +2,10 @@ import type { Localized } from './types'
 
 export const profile = {
   name: 'João Gabriel Duarte',
+  role: {
+    en: 'Software Developer',
+    pt: 'Desenvolvedor de Software',
+  } as Localized,
   headline: {
     en: 'I build websites and systems that people rely on.',
     pt: 'Crio sites e sistemas em que as pessoas confiam.',

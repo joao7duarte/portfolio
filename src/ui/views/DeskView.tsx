@@ -11,15 +11,15 @@ type Props = {
 }
 
 export function DeskView({ coffeeNote, onNavigate }: Props) {
-  const { lang, t } = useLang()
+  const { lang } = useLang()
   return (
     <>
       <header className="ov-identity">
         <h1 tabIndex={-1} data-autofocus>
           {profile.name}
         </h1>
+        <p className="ov-role">{profile.role[lang]}</p>
         <p className="ov-headline">{profile.headline[lang]}</p>
-        <p className="ov-hint">{t.hint}</p>
       </header>
       <LangSwitch className="ov-deskLang" />
       <div className="ov-deskFoot">
