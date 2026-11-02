@@ -101,7 +101,7 @@
 
 .ov-deskLang {
   position: absolute;
-  top: clamp(1.25rem, 4vw, 3.5rem);
+  top: calc(clamp(1.25rem, 4vw, 3.5rem) + var(--safe-top));
   right: clamp(1.25rem, 4vw, 3.5rem);
 }
 
@@ -109,7 +109,7 @@
 
 .ov-back-corner {
   position: absolute;
-  top: 0.5rem;
+  top: calc(0.5rem + var(--safe-top));
   left: 0.75rem;
   z-index: 1;
 }

@@ -2,7 +2,7 @@
 
 .ov-identity {
   position: absolute;
-  top: clamp(1.25rem, 4vw, 3.5rem);
+  top: calc(clamp(1.25rem, 4vw, 3.5rem) + var(--safe-top));
   left: clamp(1.25rem, 4vw, 3.5rem);
   right: clamp(1.25rem, 4vw, 3.5rem);
   max-width: 34rem;
@@ -45,7 +45,7 @@
   position: absolute;
   left: clamp(1.25rem, 4vw, 3.5rem);
   right: clamp(1.25rem, 4vw, 3.5rem);
-  bottom: clamp(1rem, 3vw, 2.5rem);
+  bottom: calc(clamp(1rem, 3vw, 2.5rem) + var(--safe-bottom));
 }
 
 /* Mug easter egg */

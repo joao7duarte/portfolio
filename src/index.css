@@ -6,6 +6,9 @@
   --graphite-soft: #66574c;
   --paper: #fbf6ec;
   --accent: #1f5c4d;
+  /* Space taken by a phone's notch and home bar */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 
   font-family: 'Schibsted Grotesk', system-ui, sans-serif;
   color: var(--graphite);
@@ -24,8 +27,16 @@ body,
   margin: 0;
 }
 
+html,
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* The screen area that is really visible, which changes as a phone browser's bars show and hide */
 .app {
   position: relative;
+  height: 100dvh;
   overflow: hidden;
 }
 

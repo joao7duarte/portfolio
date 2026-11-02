@@ -22,6 +22,7 @@
     min-width: 26rem;
     border-top: 0;
     border-left: 2px solid var(--graphite);
+    padding-top: var(--safe-top);
     animation-name: ov-slide;
   }
 }
@@ -39,7 +40,7 @@
 .ov-panel-body {
   flex: 1;
   overflow-y: auto;
-  padding: 1.5rem clamp(1rem, 3vw, 2.25rem) 2.5rem;
+  padding: 1.5rem clamp(1rem, 3vw, 2.25rem) calc(2.5rem + var(--safe-bottom));
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
