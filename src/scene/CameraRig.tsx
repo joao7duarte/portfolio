@@ -79,7 +79,7 @@ export function computeGoal(view: View, aspect: number): Goal {
 
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
 
-function useReducedMotion() {
+export function useReducedMotion() {
   const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')

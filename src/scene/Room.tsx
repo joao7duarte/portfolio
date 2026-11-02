@@ -1,6 +1,9 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { RoundedBox } from '@react-three/drei'
-import type { Group, Mesh, Object3D, SpotLight } from 'three'
+import { useFrame, useThree } from '@react-three/fiber'
+import type { Group, Mesh, MeshStandardMaterial, Object3D, SpotLight } from 'three'
+import { useReducedMotion } from './CameraRig'
+import { Chair } from './Chair'
 import { DESK_TOP, DESK_WIDTH } from './dims'
 import { ACCENT, FLOOR, GRAPHITE, PAPER, PLASTER, WALNUT } from './palette'
 import { useArtTexture, useRugTexture } from './textures'
@@ -10,12 +13,15 @@ const WALL_Z = -1.4
 
 const LAMP_POS: [number, number, number] = [1.4, DESK_TOP, -0.55]
 const LAMP_TILT = -0.7
+const LAMP_INTENSITY = 3.2
+const SHADE_GLOW = 0.55
+const DIM_MS = 2000
 
 /**
  * Cozy evening room: plaster walls on three sides, rug, desk, lamp and quiet props.
  * Nothing here is clickable: raycasting is switched off so props never block the menu objects.
  */
-export function Room() {
+export function Room({ lampDimId }: { lampDimId: number }) {
   const root = useRef<Group>(null)
   useLayoutEffect(() => {
     root.current?.traverse((o) => {
@@ -28,8 +34,9 @@ export function Room() {
       <Shell />
       <Rug />
       <Desk />
-      <Lamp />
-      <Mug position={[-0.9, DESK_TOP, -0.2]} />
+      <Lamp dimId={lampDimId} />
+      {/* pushed back and swiveled out, as if someone just got up; to the camera's left of the desk so it hides nothing */}
+      <Chair position={[-2.15, 0, 1.55]} rotation={1.2} />
       <Books position={[1.0, DESK_TOP, -0.22]} />
       <Plant position={[2.4, 0, -0.65]} />
       <Shelf position={[3.0, DESK_TOP + 0.9, WALL_Z]} />
@@ -104,12 +111,32 @@ function Desk() {
 }
 
 /** Desk lamp with a real warm spot light that makes a soft pool on the desk. No shadow map, so it stays cheap. */
-function Lamp() {
+function Lamp({ dimId }: { dimId: number }) {
   const spot = useRef<SpotLight>(null)
   const target = useRef<Object3D>(null)
+  const shade = useRef<MeshStandardMaterial>(null)
+  const dimStart = useRef<number | null>(null)
+  const invalidate = useThree((s) => s.invalidate)
+  const reduced = useReducedMotion()
   useEffect(() => {
     if (spot.current && target.current) spot.current.target = target.current
   }, [])
+  useEffect(() => {
+    if (dimId > 0 && !reduced) {
+      dimStart.current = performance.now()
+      invalidate()
+    }
+  }, [dimId, reduced, invalidate])
+  // the lamp fades down and back up once
+  useFrame((state) => {
+    if (dimStart.current === null) return
+    const p = Math.min(1, (performance.now() - dimStart.current) / DIM_MS)
+    const light = 1 - 0.85 * Math.sin(p * Math.PI)
+    if (spot.current) spot.current.intensity = LAMP_INTENSITY * light
+    if (shade.current) shade.current.emissiveIntensity = SHADE_GLOW * light
+    if (p >= 1) dimStart.current = null
+    state.invalidate()
+  })
   const metal = <meshStandardMaterial color={GRAPHITE} roughness={0.45} metalness={0.3} />
   return (
     <group>
@@ -129,7 +156,7 @@ function Lamp() {
           </mesh>
           <mesh position={[0, 0.22, 0]}>
             <cylinderGeometry args={[0.035, 0.09, 0.15, 32, 1, true]} />
-            <meshStandardMaterial color="#f0dcb8" emissive="#ffb766" emissiveIntensity={0.55} roughness={0.8} side={2} />
+            <meshStandardMaterial ref={shade} color="#f0dcb8" emissive="#ffb766" emissiveIntensity={SHADE_GLOW} roughness={0.8} side={2} />
           </mesh>
           <mesh position={[0, 0.17, 0]}>
             <sphereGeometry args={[0.028, 16, 12]} />
@@ -141,46 +168,12 @@ function Lamp() {
         ref={spot}
         position={[LAMP_POS[0] + 0.08, DESK_TOP + 0.52, LAMP_POS[2]]}
         color="#ffb35e"
-        intensity={3.2}
+        intensity={LAMP_INTENSITY}
         angle={0.85}
         penumbra={1}
         decay={2}
       />
       <object3D ref={target} position={[0.9, DESK_TOP, -0.05]} />
-    </group>
-  )
-}
-
-/** Sized against the keyboard (44cm, 1.575 wide): a 9cm x 10cm mug is about 0.32 wide and 0.35 tall. */
-function Mug({ position }: { position: [number, number, number] }) {
-  const R = 0.16
-  const H = 0.35
-  const ceramic = <meshStandardMaterial color={PAPER} roughness={0.45} />
-  return (
-    <group position={position}>
-      <mesh position={[0, H / 2, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[R, R * 0.92, H, 40, 1, true]} />
-        <meshStandardMaterial color={PAPER} roughness={0.45} side={2} />
-      </mesh>
-      <mesh position={[0, 0.006, 0]} receiveShadow>
-        <cylinderGeometry args={[R * 0.92, R * 0.92, 0.012, 40]} />
-        {ceramic}
-      </mesh>
-      {/* coffee */}
-      <mesh position={[0, H - 0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[R * 0.97, 40]} />
-        <meshStandardMaterial color="#4a2c1d" roughness={0.3} />
-      </mesh>
-      {/* accent band */}
-      <mesh position={[0, H * 0.55, 0]}>
-        <cylinderGeometry args={[R * 0.965, R * 0.955, 0.05, 40, 1, true]} />
-        <meshStandardMaterial color={ACCENT} roughness={0.6} side={2} />
-      </mesh>
-      {/* handle: a half ring on the +x side */}
-      <mesh position={[R * 0.96, H * 0.5, 0]} rotation={[0, 0, -Math.PI / 2]} castShadow>
-        <torusGeometry args={[0.095, 0.022, 12, 24, Math.PI]} />
-        {ceramic}
-      </mesh>
     </group>
   )
 }
