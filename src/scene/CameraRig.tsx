@@ -23,6 +23,7 @@ type Spec = {
   half: Vector3 // half-size of the object's world bounds
   dir: Vector3 // direction from the object towards the camera
   pad: number // breathing room around the bounds
+  padNarrow?: number // pad on narrow screens, when it differs
   minSize?: number // smallest framed extent, so tiny objects are not blown up
   panel: boolean // HTML panel covers part of the screen in this view
 }
@@ -37,7 +38,7 @@ const rot = (hx: number, hy: number, hz: number, a: number) =>
 const DESK_FULL_H = DESK_TOP + 1.2
 
 const SPECS: Record<View, Spec> = {
-  desk: { center: v(0, DESK_FULL_H / 2, 0), half: v(1.7, DESK_FULL_H / 2, 0.7), dir: v(0.5, 0.5, 1), pad: 1.22, panel: false },
+  desk: { center: v(0, DESK_FULL_H / 2, 0), half: v(1.7, DESK_FULL_H / 2, 0.7), dir: v(0.5, 0.5, 1), pad: 1.22, padNarrow: 0.98, panel: false },
   projects: { center: v(MONITOR_POS[0], MONITOR_POS[1] + 0.72, MONITOR_POS[2] + 0.03), half: v(0.8, 0.475, 0.03), dir: v(0.08, 0.03, 1), pad: 1.06, panel: false },
   skills: { center: at(KEYBOARD_POS, 0.03), half: v(0.9, 0.03, 0.3), dir: v(0, 1, 0.3), pad: 1.3, panel: true },
   experience: { center: at(NOTEBOOK_POS, 0.03), half: rot(0.25, 0.03, 0.33, NOTEBOOK_ROT), dir: v(0, 1, 0.3), pad: 1.5, minSize: 1.0, panel: true },
@@ -67,8 +68,9 @@ export function computeGoal(view: View, aspect: number): Goal {
 
   // projected size of the bounds on the screen axes
   const extent = (a: Vector3) => 2 * (s.half.x * Math.abs(a.x) + s.half.y * Math.abs(a.y) + s.half.z * Math.abs(a.z))
-  const w = Math.max(extent(right), s.minSize ?? 0) * s.pad
-  const h = Math.max(extent(up), s.minSize ?? 0) * s.pad
+  const pad = wide ? s.pad : (s.padNarrow ?? s.pad)
+  const w = Math.max(extent(right), s.minSize ?? 0) * pad
+  const h = Math.max(extent(up), s.minSize ?? 0) * pad
   const d = Math.max(w / fracX / (2 * TAN * aspect), h / fracY / (2 * TAN))
 
   const fullH = 2 * d * TAN
