@@ -53,7 +53,7 @@ export function StudioScene({ view, lang, activeSkillId, coffee, onNavigate, onS
       <SceneBoundary>
         <Canvas
           frameloop="demand"
-          dpr={[1, 1.75]}
+          dpr={[1, 3]}
           shadows
           gl={{ antialias: true, toneMapping: NoToneMapping }}
           camera={{ fov: FOV, near: 0.1, far: 60, position: [3, 3, 6] }}
