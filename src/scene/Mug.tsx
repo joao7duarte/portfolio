@@ -12,6 +12,11 @@ const SURFACE_LOW = 0.02
 const SURFACE_HIGH = H - 0.04
 const SIP_MS = 800
 const STEAM_MS = 1800
+/** Wisps that rise from a full mug all the time, each a share of the loop apart. */
+const WISPS = [0, 0.25, 0.5, 0.75]
+const WISP_MS = 3400
+/** The room only redraws on demand, so the wisps ask for a frame at this rate while they show. */
+const WISP_FPS = 30
 const STEAM_PUFFS = [
   { x: -0.05, z: 0.02, delay: 0 },
   { x: 0.04, z: -0.03, delay: 0.15 },
@@ -38,6 +43,21 @@ export function Mug({ position, enabled, coffee, onClick }: Props) {
   const sipStart = useRef<number | null>(null)
   const steamStart = useRef<number | null>(null)
   const fill = useRef(1)
+  const wisps = useRef<Group>(null)
+  const wispMats = useRef<(MeshBasicMaterial | null)[]>([])
+  // steam rises while there is coffee, on the desk view, unless the visitor turned animations off
+  const steaming = enabled && level > 0 && !reduced
+
+  useEffect(() => {
+    if (!steaming) {
+      invalidate()
+      return
+    }
+    const t = window.setInterval(() => {
+      if (!document.hidden) invalidate()
+    }, 1000 / WISP_FPS)
+    return () => window.clearInterval(t)
+  }, [steaming, invalidate])
 
   useEffect(() => {
     if (sipId > 0 && !reduced) sipStart.current = performance.now()
@@ -78,6 +98,21 @@ export function Mug({ position, enabled, coffee, onClick }: Props) {
       surface.current.position.y = y
       surface.current.scale.setScalar(taper)
       surface.current.visible = fill.current > 0.01
+    }
+
+    if (wisps.current) {
+      wisps.current.visible = steaming
+      if (steaming) {
+        wisps.current.children.forEach((wisp, i) => {
+          const p = (now / WISP_MS + WISPS[i]) % 1
+          wisp.position.set(Math.sin(p * Math.PI * 2 + i) * 0.035, H + 0.02 + p * 0.5, Math.cos(p * Math.PI * 1.5 + i) * 0.03)
+          // soft and stretched upward, widening as it rises
+          const w = 0.6 + p * 1.5
+          wisp.scale.set(w, w * 1.6, w)
+          const material = wispMats.current[i]
+          if (material) material.opacity = Math.sin(p * Math.PI) * 0.14
+        })
+      }
     }
 
     if (steam.current) {
@@ -127,6 +162,22 @@ export function Mug({ position, enabled, coffee, onClick }: Props) {
               <torusGeometry args={[0.095, 0.022, 12, 24, Math.PI]} />
               {ceramic}
             </mesh>
+          </group>
+          <group ref={wisps} visible={false}>
+            {WISPS.map((_, i) => (
+              <mesh key={i} raycast={() => {}}>
+                <sphereGeometry args={[0.04, 12, 10]} />
+                <meshBasicMaterial
+                  ref={(m) => {
+                    wispMats.current[i] = m
+                  }}
+                  color="#ffffff"
+                  transparent
+                  opacity={0}
+                  depthWrite={false}
+                />
+              </mesh>
+            ))}
           </group>
           <group ref={steam} visible={false}>
             {STEAM_PUFFS.map((puff, i) => (

@@ -1,7 +1,8 @@
-import { Component, useState, type ReactNode } from 'react'
-import { Canvas } from '@react-three/fiber'
+import { Component, useEffect, useRef, useState, type ReactNode } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { NoToneMapping } from 'three'
 import type { Lang, View } from '../content'
+import { hideBoot } from '../lib/boot'
 import type { Coffee } from '../lib/useCoffee'
 import { CameraRig, FOV } from './CameraRig'
 import { Monitor, Notebook, Phone } from './Gadgets'
@@ -29,10 +30,23 @@ class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean
   }
   componentDidCatch(error: unknown) {
     console.warn('3D scene disabled:', error)
+    hideBoot()
   }
   render() {
     return this.state.failed ? null : this.props.children
   }
+}
+
+/** Lifts the loading screen once the room's first frame is on screen. */
+function FirstFrame() {
+  const seen = useRef(false)
+  useFrame(() => {
+    if (seen.current) return
+    seen.current = true
+    // useFrame runs before the frame is drawn, so wait for the next one
+    requestAnimationFrame(() => hideBoot())
+  })
+  return null
 }
 
 function hasWebGL() {
@@ -46,6 +60,10 @@ function hasWebGL() {
 
 export function StudioScene({ view, lang, activeSkillId, coffee, onNavigate, onSelectSkill, onMugClick }: Props) {
   const [supported] = useState(hasWebGL)
+  // without WebGL there is no room to wait for
+  useEffect(() => {
+    if (!supported) hideBoot()
+  }, [supported])
   if (!supported) return null
 
   return (
@@ -79,6 +97,7 @@ export function StudioScene({ view, lang, activeSkillId, coffee, onNavigate, onS
           />
           {/* glow just inside the window */}
           <pointLight position={[-0.15, DESK_TOP + 1.3, -1.0]} intensity={1.4} color="#8fa8ff" distance={4} decay={2} />
+          <FirstFrame />
           <CameraRig view={view} />
           <Room lampDimId={coffee.dimId} />
           <Mug position={[-0.9, DESK_TOP, -0.2]} enabled={view === 'desk'} coffee={coffee} onClick={onMugClick} />
