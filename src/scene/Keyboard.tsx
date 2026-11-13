@@ -18,22 +18,30 @@ const COLS = 15 // units per row
 type Cell = { w: number; skillIndex?: number; x: number; z: number }
 type Spec = { w: number; skill?: boolean }
 
+/** Skill keys that fit in the second and third rows, between their wide edge keys. */
+const ROW2_KEYS = 12
+const ROW3_KEYS = 11
+
 function buildLayout(): Cell[] {
-  const n = skills.length
-  const side = Math.max(0, 12 - n)
-  const left = Math.floor(side / 2)
-  const right = side - left
   const one = (count: number): Spec[] => Array.from({ length: count }, () => ({ w: 1 }))
+  // `count` skill keys centred among `capacity` unit keys
+  const centred = (capacity: number, count: number): Spec[] => {
+    const side = Math.max(0, capacity - count)
+    const left = Math.floor(side / 2)
+    return [
+      ...one(left),
+      ...Array.from({ length: count }, (): Spec => ({ w: 1, skill: true })),
+      ...one(side - left),
+    ]
+  }
+  // one row when they fit, otherwise split evenly so no key sits alone
+  const n = skills.length
+  const row2 = n <= ROW2_KEYS ? n : Math.min(Math.ceil(n / 2), ROW2_KEYS)
+  const row3 = Math.min(n - row2, ROW3_KEYS)
   const rows: Spec[][] = [
     [...one(13), { w: 2 }],
-    [
-      { w: 1.5 },
-      ...one(left),
-      ...Array.from({ length: n }, (): Spec => ({ w: 1, skill: true })),
-      ...one(right),
-      { w: 1.5 },
-    ],
-    [{ w: 1.75 }, ...one(11), { w: 2.25 }],
+    [{ w: 1.5 }, ...centred(ROW2_KEYS, row2), { w: 1.5 }],
+    [{ w: 1.75 }, ...centred(ROW3_KEYS, row3), { w: 2.25 }],
     [{ w: 1.25 }, { w: 1.25 }, { w: 1.25 }, { w: 6.25 }, { w: 1.25 }, { w: 1.25 }, { w: 1.25 }, { w: 1.25 }],
   ]
   const cells: Cell[] = []

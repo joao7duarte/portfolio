@@ -8,27 +8,89 @@
   max-width: 34rem;
 }
 
-.ov-identity h1 {
-  font-size: clamp(2.5rem, 7vw, 5.25rem);
-  font-weight: 700;
+/* decastro.dev logo: Poppins Light, white on black, green ".dev" (brand kit v2) */
+.ov-identity .ov-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18em;
+  font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  font-size: clamp(1.7rem, 5vw, 3.4rem);
+  font-weight: 300;
   line-height: 1;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: #000;
+}
+
+/* phones: leave room for the language switch on the same line */
+@media (max-width: 480px) {
+  .ov-identity .ov-brand {
+    font-size: 1.6rem;
+  }
+}
+
+/* Hover: the letters hop in a wave and the brackets open a little */
+.ov-root .ov-brand {
+  pointer-events: auto;
+  cursor: default;
+}
+
+.ov-brand-word span,
+.ov-brand-tld span {
+  display: inline-block;
+}
+
+.ov-brand-open,
+.ov-brand-close {
+  display: inline-block;
+  transition: transform 0.25s ease-out;
+}
+
+@keyframes ov-hop {
+  40% {
+    transform: translateY(-0.22em);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .ov-brand:hover .ov-brand-word span span,
+  .ov-brand:hover .ov-brand-word > span:not(.ov-brand-tld) {
+    animation: ov-hop 0.45s ease-in-out calc(var(--i) * 45ms);
+  }
+
+  .ov-brand:hover .ov-brand-open {
+    transform: translateX(-0.12em);
+  }
+
+  .ov-brand:hover .ov-brand-close {
+    transform: translateX(0.12em);
+  }
+}
+
+.ov-brand-tld {
+  /* the brand kit's deep green, for green text on a light background */
+  color: #2e8b3a;
+}
+
+/* the logo's slash runs taller than the letters */
+.ov-brand-slash {
+  display: inline-block;
+  transform: scaleY(1.45) translateY(-0.04em);
+}
+
+.ov-person {
+  margin-top: 1rem !important;
+  font-size: clamp(1.6rem, 4vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 
 .ov-role {
-  margin-top: 0.5rem !important;
-  font-size: clamp(1.35rem, 3vw, 2.25rem);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.015em;
-}
-
-.ov-headline {
-  margin-top: 0.75rem !important;
-  max-width: 26ch;
-  font-size: clamp(1.2rem, 2.6vw, 1.9rem);
+  margin-top: 0.35rem !important;
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
   font-weight: 500;
-  line-height: 1.25;
+  line-height: 1.2;
   letter-spacing: -0.01em;
 }
 

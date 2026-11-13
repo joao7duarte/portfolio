@@ -3,15 +3,15 @@ import { strings, type Lang } from '../content'
 
 const LANG_KEY = 'portfolio-lang'
 
-/** Saved choice first, then the browser's language. */
+/** Saved choice first, otherwise Portuguese. */
 function initialLang(): Lang {
   try {
     const saved = localStorage.getItem(LANG_KEY)
     if (saved === 'en' || saved === 'pt') return saved
   } catch {
-    // storage can be blocked; fall through to the browser language
+    // storage can be blocked; fall through to Portuguese
   }
-  return navigator.language.toLowerCase().startsWith('pt') ? 'pt' : 'en'
+  return 'pt'
 }
 
 /** Current language, kept in sync with the page's lang, title and saved preference. */

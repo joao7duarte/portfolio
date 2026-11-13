@@ -11,6 +11,12 @@
   background: var(--paper);
   border-top: 2px solid var(--graphite);
   animation: ov-rise 0.28s ease-out;
+  transition: height 0.3s ease-out;
+}
+
+/* Grown while reading: leaves room above for the Back to desk button */
+.ov-panel.ov-panel-full {
+  height: calc(100% - 3.75rem - var(--safe-top));
 }
 
 @media (min-width: 900px) and (min-aspect-ratio: 1/1) {
@@ -24,6 +30,11 @@
     border-left: 2px solid var(--graphite);
     padding-top: var(--safe-top);
     animation-name: ov-slide;
+  }
+
+  /* the side panel is already full height */
+  .ov-panel.ov-panel-full {
+    height: auto;
   }
 }
 

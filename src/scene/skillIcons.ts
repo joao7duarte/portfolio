@@ -3,10 +3,12 @@ import {
   siGit,
   siJavascript,
   siModelcontextprotocol,
+  siN8n,
   siNodedotjs,
   siPython,
   siReact,
   siSupabase,
+  siThreedotjs,
   siTypescript,
 } from 'simple-icons'
 
@@ -34,6 +36,9 @@ export const SKILL_ICONS: Record<string, SkillIcon> = {
   python: brand(siPython),
   supabase: brand(siSupabase),
   mcp: brand(siModelcontextprotocol, '#2b2320'),
+  n8n: brand(siN8n),
+  // three.js is pure black, so it gets the same espresso as the desk hardware
+  three: brand(siThreedotjs, '#2b2320'),
   css: brand(siCss),
   git: brand(siGit),
   // no SQL brand mark: a generic database cylinder in neutral slate

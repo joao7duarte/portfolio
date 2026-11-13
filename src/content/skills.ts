@@ -1,6 +1,5 @@
 import type { Skill } from './types'
 
-// Text marked "Placeholder" or "Provisório" is a mockup to replace.
 export const skills: Skill[] = [
   {
     id: 'react',
@@ -16,8 +15,8 @@ export const skills: Skill[] = [
     name: 'JavaScript',
     keyLabel: 'Js',
     blurb: {
-      en: 'My main language at Embraer.',
-      pt: 'Minha principal linguagem na Embraer.',
+      en: 'My main language at Embraer and in freelance web projects.',
+      pt: 'Minha principal linguagem na Embraer e em projetos web como autônomo.',
     },
   },
   {
@@ -25,8 +24,8 @@ export const skills: Skill[] = [
     name: 'TypeScript',
     keyLabel: 'Ts',
     blurb: {
-      en: 'Placeholder: how you use TypeScript.',
-      pt: 'Provisório: como você usa TypeScript.',
+      en: 'Supabase Edge Functions (Deno) for a client’s checkout flow, and this portfolio.',
+      pt: 'Edge Functions do Supabase (Deno) para o checkout de um cliente, e este portfólio.',
     },
   },
   {
@@ -52,8 +51,8 @@ export const skills: Skill[] = [
     name: 'SQL',
     keyLabel: 'Sq',
     blurb: {
-      en: 'Queries, table creation and data manipulation in Oracle databases at Embraer.',
-      pt: 'Consultas, criação de tabelas e manipulação de dados em bancos Oracle na Embraer.',
+      en: 'Queries, table creation and data manipulation in Oracle at Embraer, and PostgreSQL in Supabase projects.',
+      pt: 'Consultas, criação de tabelas e manipulação de dados em Oracle na Embraer, e PostgreSQL em projetos com Supabase.',
     },
   },
   {
@@ -61,8 +60,8 @@ export const skills: Skill[] = [
     name: 'Python',
     keyLabel: 'Py',
     blurb: {
-      en: 'Automation with Selenium and Playwright at Embraer.',
-      pt: 'Automação com Selenium e Playwright na Embraer.',
+      en: 'Automation with Selenium and Playwright at Embraer, and an image pipeline that turns product photos into 3D textures.',
+      pt: 'Automação com Selenium e Playwright na Embraer, e um pipeline que transforma fotos de produtos em texturas 3D.',
     },
   },
   {
@@ -70,8 +69,8 @@ export const skills: Skill[] = [
     name: 'Supabase',
     keyLabel: 'Su',
     blurb: {
-      en: 'Backend and sign-in for web projects.',
-      pt: 'Backend e login em projetos web.',
+      en: 'Postgres with row level security, sign-in and Edge Functions for a client’s 3D product configurator.',
+      pt: 'Postgres com row level security, login e Edge Functions para o configurador 3D de produtos de um cliente.',
     },
   },
   {
@@ -79,8 +78,26 @@ export const skills: Skill[] = [
     name: 'MCP',
     keyLabel: 'Mc',
     blurb: {
-      en: 'Projects that connect AI tools to data and services through the Model Context Protocol.',
-      pt: 'Projetos que conectam ferramentas de IA a dados e serviços com o Model Context Protocol.',
+      en: 'MCP servers and integrations that connect AI agents to data and services, built as a freelancer.',
+      pt: 'Servidores e integrações MCP que conectam agentes de IA a dados e serviços, feitos como autônomo.',
+    },
+  },
+  {
+    id: 'n8n',
+    name: 'n8n',
+    keyLabel: 'N8',
+    blurb: {
+      en: 'Workflow automation and AI agents that I build and sell, self-hosted on Linux servers.',
+      pt: 'Automações de fluxos e agentes de IA que desenvolvo e vendo, hospedados em servidores Linux próprios.',
+    },
+  },
+  {
+    id: 'three',
+    name: 'three.js',
+    keyLabel: '3D',
+    blurb: {
+      en: '3D on the web: a client’s product configurator with a real-time preview, and this portfolio’s desk.',
+      pt: '3D na web: o configurador de produtos de um cliente com prévia em tempo real, e a mesa deste portfólio.',
     },
   },
   {
@@ -88,8 +105,8 @@ export const skills: Skill[] = [
     name: 'CSS',
     keyLabel: 'Cs',
     blurb: {
-      en: 'Interface styling for web projects.',
-      pt: 'Estilização de interfaces em projetos web.',
+      en: 'Interface styling for web projects, including this portfolio.',
+      pt: 'Estilização de interfaces em projetos web, incluindo este portfólio.',
     },
   },
   {
@@ -97,8 +114,8 @@ export const skills: Skill[] = [
     name: 'Git',
     keyLabel: 'Gi',
     blurb: {
-      en: 'Version control on the Embraer Program Management System.',
-      pt: 'Controle de versão no Embraer Program Management System.',
+      en: 'Version control with Git and GitHub on the Embraer Program Management System and my own projects.',
+      pt: 'Controle de versão com Git e GitHub no Embraer Program Management System e nos meus projetos.',
     },
   },
 ]

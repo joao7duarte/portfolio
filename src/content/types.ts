@@ -19,13 +19,16 @@ export type Project = {
   role: Localized
   skillIds: string[]
   liveUrl?: string
+  /** Public source code. */
+  codeUrl?: string
   image?: { src: string; alt: Localized; caption: Localized }
   /** Kept in the code but left off the site. */
   hidden?: boolean
 }
 
 export type Job = {
-  company: string
+  /** A plain string for a company name, localized for a description such as "Freelance". */
+  company: string | Localized
   title: Localized
   period: Localized
   summary: Localized
@@ -35,4 +38,9 @@ export type Education = {
   school: string
   degree: Localized
   period: Localized
+}
+
+export type SpokenLanguage = {
+  name: Localized
+  level: Localized
 }

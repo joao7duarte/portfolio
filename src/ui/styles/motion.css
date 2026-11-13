@@ -30,5 +30,6 @@
   .ov-panel,
   .ov-root .ov-coffeeNote {
     animation: none;
+    transition: none;
   }
 }

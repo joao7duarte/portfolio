@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" font-family="Schibsted Grotesk, system-ui, sans-serif">
+  <rect width="640" height="480" fill="#eadfcd"/>
+  <!-- faint grid, like an n8n canvas -->
+  <g fill="#d8c8ae">
+    <circle cx="40" cy="40" r="2"/><circle cx="120" cy="40" r="2"/><circle cx="200" cy="40" r="2"/><circle cx="280" cy="40" r="2"/><circle cx="360" cy="40" r="2"/><circle cx="440" cy="40" r="2"/><circle cx="520" cy="40" r="2"/><circle cx="600" cy="40" r="2"/>
+    <circle cx="40" cy="440" r="2"/><circle cx="120" cy="440" r="2"/><circle cx="200" cy="440" r="2"/><circle cx="280" cy="440" r="2"/><circle cx="360" cy="440" r="2"/><circle cx="440" cy="440" r="2"/><circle cx="520" cy="440" r="2"/><circle cx="600" cy="440" r="2"/>
+  </g>
+
+  <!-- job postings coming in from many sources -->
+  <g stroke="#66574c" stroke-width="2">
+    <rect x="34" y="110" width="118" height="74" rx="8" fill="#fbf6ec" transform="rotate(-6 93 147)"/>
+    <rect x="40" y="196" width="118" height="74" rx="8" fill="#fbf6ec" transform="rotate(4 99 233)"/>
+    <rect x="30" y="284" width="118" height="74" rx="8" fill="#fbf6ec" transform="rotate(-3 89 321)"/>
+  </g>
+  <g fill="#b9a68c">
+    <rect x="50" y="124" width="70" height="8" rx="4" transform="rotate(-6 93 147)"/>
+    <rect x="50" y="142" width="50" height="6" rx="3" transform="rotate(-6 93 147)"/>
+    <rect x="56" y="212" width="74" height="8" rx="4" transform="rotate(4 99 233)"/>
+    <rect x="56" y="230" width="46" height="6" rx="3" transform="rotate(4 99 233)"/>
+    <rect x="46" y="300" width="66" height="8" rx="4" transform="rotate(-3 89 321)"/>
+    <rect x="46" y="318" width="54" height="6" rx="3" transform="rotate(-3 89 321)"/>
+  </g>
+
+  <!-- connections -->
+  <g fill="none" stroke="#2b2320" stroke-width="3" stroke-linecap="round">
+    <path d="M160 150 C 200 150, 200 236, 232 236"/>
+    <path d="M166 236 L 232 236"/>
+    <path d="M156 322 C 200 322, 200 236, 232 236"/>
+    <path d="M336 236 L 372 236"/>
+  </g>
+
+  <!-- n8n workflow node -->
+  <rect x="232" y="196" width="104" height="80" rx="14" fill="#fbf6ec" stroke="#2b2320" stroke-width="3"/>
+  <circle cx="232" cy="236" r="7" fill="#ea4b71"/>
+  <circle cx="336" cy="236" r="7" fill="#ea4b71"/>
+  <!-- filter funnel -->
+  <path d="M258 216 h52 l-20 22 v18 l-12 -6 v-12 z" fill="#1f5c4d"/>
+
+  <!-- ranked shortlist -->
+  <rect x="372" y="122" width="236" height="228" rx="14" fill="#fbf6ec" stroke="#2b2320" stroke-width="3"/>
+  <rect x="372" y="122" width="236" height="34" rx="14" fill="#2b2320"/>
+  <rect x="372" y="140" width="236" height="16" fill="#2b2320"/>
+  <circle cx="392" cy="139" r="5" fill="#e8695f"/><circle cx="410" cy="139" r="5" fill="#e8b95f"/><circle cx="428" cy="139" r="5" fill="#6fcf8a"/>
+  <g font-size="22" font-weight="700" fill="#2b2320">
+    <text x="392" y="196">92</text>
+    <text x="392" y="248">85</text>
+    <text x="392" y="300">78</text>
+  </g>
+  <g>
+    <rect x="436" y="180" width="150" height="14" rx="7" fill="#e3d8c4"/>
+    <rect x="436" y="180" width="138" height="14" rx="7" fill="#1f5c4d"/>
+    <rect x="436" y="232" width="150" height="14" rx="7" fill="#e3d8c4"/>
+    <rect x="436" y="232" width="127" height="14" rx="7" fill="#1f5c4d"/>
+    <rect x="436" y="284" width="150" height="14" rx="7" fill="#e3d8c4"/>
+    <rect x="436" y="284" width="116" height="14" rx="7" fill="#2f7a5f"/>
+  </g>
+  <g fill="#b9a68c">
+    <rect x="436" y="202" width="90" height="6" rx="3"/>
+    <rect x="436" y="254" width="74" height="6" rx="3"/>
+    <rect x="436" y="306" width="82" height="6" rx="3"/>
+  </g>
+
+  <!-- daily message on the phone -->
+  <g transform="rotate(8 548 382)">
+    <rect x="510" y="318" width="76" height="128" rx="12" fill="#2b2320"/>
+    <rect x="516" y="330" width="64" height="104" rx="6" fill="#fbf6ec"/>
+    <rect x="522" y="340" width="48" height="20" rx="8" fill="#1f5c4d"/>
+    <rect x="522" y="366" width="40" height="20" rx="8" fill="#1f5c4d"/>
+    <rect x="522" y="392" width="46" height="20" rx="8" fill="#2f7a5f"/>
+  </g>
+</svg>

@@ -75,6 +75,12 @@ export function ProjectWindow({
               {external && <span className="ov-sr">{t.newTab}</span>}
             </a>
           )}
+          {project.codeUrl && (
+            <a className="ov-link" href={project.codeUrl} target="_blank" rel="noopener noreferrer">
+              {t.viewCode}
+              <span className="ov-sr">{t.newTab}</span>
+            </a>
+          )}
         </div>
       </div>
     </article>
