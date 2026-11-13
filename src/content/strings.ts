@@ -3,7 +3,7 @@ import type { Lang } from './types'
 /** Interface text, including the labels drawn in the 3D scene. */
 export const strings = {
   en: {
-    pageTitle: 'João Gabriel Duarte | Portfolio',
+    pageTitle: 'decastro.dev | João Gabriel Duarte',
     sections: 'Sections',
     projects: 'Projects',
     skills: 'Skills',
@@ -34,7 +34,7 @@ export const strings = {
     coffeeTalk: 'Get in touch',
   },
   pt: {
-    pageTitle: 'João Gabriel Duarte | Portfólio',
+    pageTitle: 'decastro.dev | João Gabriel Duarte',
     sections: 'Seções',
     projects: 'Projetos',
     skills: 'Habilidades',

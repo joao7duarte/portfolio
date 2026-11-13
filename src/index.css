@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --plaster: #eadfcd;
   --plaster-deep: #d8c8ae;
   --walnut: #8a5a3a;
@@ -6,14 +6,15 @@
   --graphite-soft: #66574c;
   --paper: #fbf6ec;
   --accent: #1f5c4d;
+  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
   /* Space taken by a phone's notch and home bar */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-  font-family: 'Schibsted Grotesk', system-ui, sans-serif;
+  font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
   color: var(--graphite);
   /* The wall as rendered, so any area the scene can't paint blends with the room */
-  background: #d4b68f;
+  background: #28262a;
 }
 
 * {

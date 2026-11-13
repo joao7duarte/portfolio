@@ -39,6 +39,8 @@
 }
 
 .ov-period {
+  font-family: var(--mono);
+  font-size: 0.85rem;
   color: var(--graphite-soft);
   margin: 0.1rem 0 0.6rem !important;
 }

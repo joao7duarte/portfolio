@@ -262,32 +262,53 @@ export function useRugTexture() {
   )
 }
 
-/** Small abstract landscape for the framed picture. */
-export function useArtTexture() {
+/** Night city seen through a window, out of focus: a dusk gradient and soft round light blurs (bokeh). */
+export function useWindowTexture() {
   return useMade(
     () =>
-      make(512, 384, (ctx, w, h) => {
-        ctx.fillStyle = '#f1e4cc'
+      make(1024, 680, (ctx, w, h) => {
+        const sky = ctx.createLinearGradient(0, 0, 0, h)
+        sky.addColorStop(0, '#0d1424')
+        sky.addColorStop(0.6, '#1d2438')
+        sky.addColorStop(1, '#3b2c34')
+        ctx.fillStyle = sky
         ctx.fillRect(0, 0, w, h)
-        ctx.fillStyle = '#c9714f'
-        ctx.beginPath()
-        ctx.arc(340, 130, 56, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.fillStyle = '#6f9a84'
-        ctx.beginPath()
-        ctx.moveTo(0, 270)
-        ctx.quadraticCurveTo(150, 170, 300, 270)
-        ctx.lineTo(300, h)
-        ctx.lineTo(0, h)
-        ctx.fill()
-        ctx.fillStyle = ACCENT
-        ctx.beginPath()
-        ctx.moveTo(180, 300)
-        ctx.quadraticCurveTo(350, 190, w, 290)
-        ctx.lineTo(w, h)
-        ctx.lineTo(180, h)
-        ctx.fill()
+        // dark, blurred building shapes
+        const rand = seeded(7)
+        ctx.fillStyle = 'rgba(8,10,18,0.55)'
+        for (let x = 0; x < w; ) {
+          const bw = 60 + rand() * 120
+          const bh = h * (0.25 + rand() * 0.45)
+          ctx.fillRect(x, h - bh, bw - 6, bh)
+          x += bw
+        }
+        // bokeh: warm street and window lights, a few cool ones and one in the brand green
+        const colors = ['255,196,120', '255,170,90', '255,226,170', '170,200,255', '255,140,110', '76,175,80']
+        for (let i = 0; i < 70; i++) {
+          const x = rand() * w
+          const y = h * (0.25 + rand() * 0.75)
+          const r = 14 + rand() * 46
+          const c = colors[i % 9 === 0 ? 5 : Math.floor(rand() * 5)]
+          const a = 0.18 + rand() * 0.4
+          const g = ctx.createRadialGradient(x, y, 0, x, y, r)
+          g.addColorStop(0, `rgba(${c},${a})`)
+          g.addColorStop(0.7, `rgba(${c},${a * 0.8})`)
+          g.addColorStop(1, `rgba(${c},0)`)
+          ctx.fillStyle = g
+          ctx.beginPath()
+          ctx.arc(x, y, r, 0, Math.PI * 2)
+          ctx.fill()
+        }
       }),
-    'art',
+    'window',
   )
+}
+
+/** Repeatable pseudo-random numbers, so the view looks the same on every visit. */
+function seeded(seed: number) {
+  let t = seed
+  return () => {
+    t = (t * 16807) % 2147483647
+    return (t - 1) / 2147483646
+  }
 }

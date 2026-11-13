@@ -44,8 +44,15 @@ export function PanelView({
           <LangSwitch />
         </div>
         <div className="ov-panel-body" onScroll={onScroll}>
+          {/* brand motif: section titles sit in code brackets, like the logo */}
           <h1 id="ov-panel-title" tabIndex={-1} data-autofocus>
+            <span className="ov-tagmark" aria-hidden="true">
+              &lt;
+            </span>
             {title}
+            <span className="ov-tagmark" aria-hidden="true">
+              /&gt;
+            </span>
           </h1>
           {children}
         </div>

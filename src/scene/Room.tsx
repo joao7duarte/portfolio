@@ -1,19 +1,22 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { RoundedBox } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
-import type { Group, Mesh, MeshStandardMaterial, Object3D, SpotLight } from 'three'
+import type { Group, Mesh, MeshStandardMaterial, Object3D, PointLight, SpotLight } from 'three'
 import { useReducedMotion } from './CameraRig'
 import { Chair } from './Chair'
+import { Tower } from './Tower'
 import { DESK_TOP, DESK_WIDTH } from './dims'
-import { ACCENT, FLOOR, GRAPHITE, PAPER, PLASTER, WALNUT } from './palette'
-import { useArtTexture, useRugTexture } from './textures'
+import { ACCENT, FLOOR, GRAPHITE, PLASTER, WALNUT } from './palette'
+import { useRugTexture, useWindowTexture } from './textures'
 
 const WALL_X = 6.5
 const WALL_Z = -1.4
 
 const LAMP_POS: [number, number, number] = [1.4, DESK_TOP, -0.55]
 const LAMP_TILT = -0.7
-const LAMP_INTENSITY = 3.2
+const LAMP_INTENSITY = 5.5
+/** Warm glow around the bulb that lights the room beyond the spot's pool. */
+const BULB_INTENSITY = 2.6
 const SHADE_GLOW = 0.55
 const DIM_MS = 2000
 
@@ -37,10 +40,11 @@ export function Room({ lampDimId }: { lampDimId: number }) {
       <Lamp dimId={lampDimId} />
       {/* pushed back and swiveled out, as if someone just got up; to the camera's left of the desk so it hides nothing */}
       <Chair position={[-2.15, 0, 1.55]} rotation={1.2} />
+      {/* under the right side of the desk, front and glass side towards the camera */}
+      <Tower position={[1.05, 0, -0.05]} />
       <Books position={[1.0, DESK_TOP, -0.22]} />
       <Plant position={[2.4, 0, -0.65]} />
-      <Shelf position={[3.0, DESK_TOP + 0.9, WALL_Z]} />
-      <Frame position={[1.7, DESK_TOP + 1.5, WALL_Z]} />
+      <Window position={[-0.15, DESK_TOP + 1.3, WALL_Z]} />
     </group>
   )
 }
@@ -113,6 +117,7 @@ function Desk() {
 /** Desk lamp with a real warm spot light that makes a soft pool on the desk. No shadow map, so it stays cheap. */
 function Lamp({ dimId }: { dimId: number }) {
   const spot = useRef<SpotLight>(null)
+  const bulb = useRef<PointLight>(null)
   const target = useRef<Object3D>(null)
   const shade = useRef<MeshStandardMaterial>(null)
   const dimStart = useRef<number | null>(null)
@@ -133,6 +138,7 @@ function Lamp({ dimId }: { dimId: number }) {
     const p = Math.min(1, (performance.now() - dimStart.current) / DIM_MS)
     const light = 1 - 0.85 * Math.sin(p * Math.PI)
     if (spot.current) spot.current.intensity = LAMP_INTENSITY * light
+    if (bulb.current) bulb.current.intensity = BULB_INTENSITY * light
     if (shade.current) shade.current.emissiveIntensity = SHADE_GLOW * light
     if (p >= 1) dimStart.current = null
     state.invalidate()
@@ -164,6 +170,7 @@ function Lamp({ dimId }: { dimId: number }) {
           </mesh>
         </group>
       </group>
+      <pointLight ref={bulb} position={[LAMP_POS[0] + 0.15, DESK_TOP + 0.6, LAMP_POS[2] + 0.1]} color="#ffb35e" intensity={BULB_INTENSITY} distance={6} decay={1.6} />
       <spotLight
         ref={spot}
         position={[LAMP_POS[0] + 0.08, DESK_TOP + 0.52, LAMP_POS[2]]}
@@ -223,54 +230,38 @@ function Plant({ position }: { position: [number, number, number] }) {
   )
 }
 
-function Shelf({ position }: { position: [number, number, number] }) {
-  const books: { x: number; h: number; w: number; c: string }[] = [
-    { x: -0.5, h: 0.26, w: 0.05, c: ACCENT },
-    { x: -0.44, h: 0.22, w: 0.045, c: '#c9714f' },
-    { x: -0.385, h: 0.28, w: 0.055, c: '#eee3cf' },
-  ]
+/** Window behind the desk: a night city out of focus, its lights glowing in the dim room. */
+function Window({ position }: { position: [number, number, number] }) {
+  const view = useWindowTexture()
+  const W = 2.2
+  const H = 1.45
+  const T = 0.07
+  const wood = <meshStandardMaterial color={WALNUT} roughness={0.7} />
   return (
     <group position={position}>
-      <mesh position={[0, 0, 0.11]} castShadow receiveShadow>
-        <boxGeometry args={[1.4, 0.04, 0.22]} />
-        <meshStandardMaterial color={WALNUT} roughness={0.7} />
+      {/* the view, unlit so the lights glow */}
+      <mesh position={[0, 0, 0.01]}>
+        <planeGeometry args={[W, H]} />
+        <meshBasicMaterial map={view} toneMapped={false} />
       </mesh>
-      {books.map((b, i) => (
-        <mesh key={i} position={[b.x, 0.02 + b.h / 2, 0.11]} castShadow>
-          <boxGeometry args={[b.w, b.h, 0.16]} />
-          <meshStandardMaterial color={b.c} roughness={0.85} />
+      {/* frame */}
+      {[
+        { p: [0, H / 2, 0.04], s: [W + 2 * T, T, 0.08] },
+        { p: [0, -H / 2, 0.04], s: [W + 2 * T, T, 0.08] },
+        { p: [-W / 2, 0, 0.04], s: [T, H, 0.08] },
+        { p: [W / 2, 0, 0.04], s: [T, H, 0.08] },
+        { p: [0, 0, 0.04], s: [0.045, H, 0.06] },
+        { p: [0, 0.12, 0.04], s: [W, 0.045, 0.06] },
+      ].map((b, i) => (
+        <mesh key={i} position={b.p as [number, number, number]} castShadow>
+          <boxGeometry args={b.s as [number, number, number]} />
+          {wood}
         </mesh>
       ))}
-      <mesh position={[0.3, 0.1, 0.11]} castShadow>
-        <cylinderGeometry args={[0.07, 0.055, 0.2, 20]} />
-        <meshStandardMaterial color="#eee3cf" roughness={0.6} />
-      </mesh>
-      <mesh position={[0.3, 0.27, 0.11]} rotation={[0, 0, 0.15]} castShadow>
-        <cylinderGeometry args={[0.006, 0.006, 0.25, 6]} />
-        <meshStandardMaterial color={ACCENT} />
-      </mesh>
-      <mesh position={[0.34, 0.25, 0.11]} rotation={[0, 0, -0.3]} castShadow>
-        <cylinderGeometry args={[0.006, 0.006, 0.22, 6]} />
-        <meshStandardMaterial color="#2f7a5f" />
-      </mesh>
-    </group>
-  )
-}
-
-function Frame({ position }: { position: [number, number, number] }) {
-  const art = useArtTexture()
-  return (
-    <group position={position}>
-      <RoundedBox args={[0.76, 0.58, 0.03]} radius={0.008} smoothness={2} position={[0, 0, 0.015]} castShadow receiveShadow>
-        <meshStandardMaterial color={WALNUT} roughness={0.7} />
-      </RoundedBox>
-      <mesh position={[0, 0, 0.031]}>
-        <planeGeometry args={[0.66, 0.48]} />
-        <meshStandardMaterial color={PAPER} roughness={0.9} />
-      </mesh>
-      <mesh position={[0, 0, 0.032]}>
-        <planeGeometry args={[0.5, 0.375]} />
-        <meshStandardMaterial map={art} roughness={0.9} />
+      {/* sill */}
+      <mesh position={[0, -H / 2 - 0.06, 0.1]} castShadow receiveShadow>
+        <boxGeometry args={[W + 0.3, 0.05, 0.2]} />
+        {wood}
       </mesh>
     </group>
   )

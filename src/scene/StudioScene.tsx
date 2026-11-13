@@ -59,12 +59,13 @@ export function StudioScene({ view, lang, activeSkillId, coffee, onNavigate, onS
           camera={{ fov: FOV, near: 0.1, far: 60, position: [3, 3, 6] }}
         >
           <color attach="background" args={[PLASTER]} />
-          {/* warm, low-contrast early-evening light */}
-          <hemisphereLight args={['#fff0dc', '#d9bf9a', 1.8]} />
+          {/* night: the room is lit only by the desk lamp (in Room) and the window; a faint fill keeps shapes readable */}
+          <hemisphereLight args={['#c9d4ff', '#3a2e24', 0.22]} />
+          {/* cool night light coming in through the window behind the desk */}
           <directionalLight
-            position={[-3, 7, 5]}
-            intensity={1.7}
-            color="#ffd9a8"
+            position={[-0.4, DESK_TOP + 3, -4]}
+            intensity={0.7}
+            color="#9fb4ff"
             castShadow
             shadow-mapSize={[2048, 2048]}
             shadow-camera-left={-6}
@@ -76,8 +77,8 @@ export function StudioScene({ view, lang, activeSkillId, coffee, onNavigate, onS
             shadow-bias={-0.0004}
             shadow-normalBias={0.02}
           />
-          {/* gentle monitor glow */}
-          <pointLight position={[0, DESK_TOP + 0.75, 0.2]} intensity={0.45} color="#fff1d6" distance={3.5} decay={2} />
+          {/* glow just inside the window */}
+          <pointLight position={[-0.15, DESK_TOP + 1.3, -1.0]} intensity={1.4} color="#8fa8ff" distance={4} decay={2} />
           <CameraRig view={view} />
           <Room lampDimId={coffee.dimId} />
           <Mug position={[-0.9, DESK_TOP, -0.2]} enabled={view === 'desk'} coffee={coffee} onClick={onMugClick} />

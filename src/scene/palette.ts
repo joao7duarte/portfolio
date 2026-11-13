@@ -5,4 +5,4 @@ export const WALNUT = '#8a5a3a'
 export const GRAPHITE = '#2b2320'
 export const PAPER = '#fbf6ec'
 export const ACCENT = '#1f5c4d'
-export const FONT = "'Schibsted Grotesk', system-ui, sans-serif"
+export const FONT = "'Poppins', 'Segoe UI', system-ui, sans-serif"

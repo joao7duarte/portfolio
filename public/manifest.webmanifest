@@ -1,9 +1,9 @@
 {
-  "name": "João Gabriel Duarte | Portfolio",
-  "short_name": "João Duarte",
+  "name": "decastro.dev | João Gabriel Duarte",
+  "short_name": "decastro.dev",
   "start_url": "/",
   "display": "fullscreen",
-  "background_color": "#d4b68f",
-  "theme_color": "#d4b68f",
+  "background_color": "#28262a",
+  "theme_color": "#28262a",
   "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
 }
