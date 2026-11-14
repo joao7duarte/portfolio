@@ -27,8 +27,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ov-os,
-  .ov-panel,
-  .ov-root .ov-coffeeNote {
+  .ov-panel {
     animation: none;
     transition: none;
   }

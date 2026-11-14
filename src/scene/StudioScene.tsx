@@ -3,7 +3,6 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { NoToneMapping } from 'three'
 import type { Lang, View } from '../content'
 import { hideBoot } from '../lib/boot'
-import type { Coffee } from '../lib/useCoffee'
 import { CameraRig, FOV } from './CameraRig'
 import { Monitor, Notebook, Phone } from './Gadgets'
 import { Keyboard } from './Keyboard'
@@ -16,10 +15,8 @@ type Props = {
   view: View
   lang: Lang
   activeSkillId: string | null
-  coffee: Coffee
   onNavigate: (view: View) => void
   onSelectSkill: (id: string | null) => void
-  onMugClick: () => void
 }
 
 /** Renders nothing if anything in the 3D tree throws; the HTML interface still has all navigation. */
@@ -58,7 +55,7 @@ function hasWebGL() {
   }
 }
 
-export function StudioScene({ view, lang, activeSkillId, coffee, onNavigate, onSelectSkill, onMugClick }: Props) {
+export function StudioScene({ view, lang, activeSkillId, onNavigate, onSelectSkill }: Props) {
   const [supported] = useState(hasWebGL)
   // without WebGL there is no room to wait for
   useEffect(() => {
@@ -99,8 +96,8 @@ export function StudioScene({ view, lang, activeSkillId, coffee, onNavigate, onS
           <pointLight position={[-0.15, DESK_TOP + 1.3, -1.0]} intensity={1.4} color="#8fa8ff" distance={4} decay={2} />
           <FirstFrame />
           <CameraRig view={view} />
-          <Room lampDimId={coffee.dimId} />
-          <Mug position={[-0.9, DESK_TOP, -0.2]} enabled={view === 'desk'} coffee={coffee} onClick={onMugClick} />
+          <Room />
+          <Mug position={[-0.9, DESK_TOP, -0.2]} steaming={view === 'desk'} />
           <Monitor view={view} lang={lang} onNavigate={onNavigate} />
           <Keyboard view={view} lang={lang} activeSkillId={activeSkillId} onNavigate={onNavigate} onSelectSkill={onSelectSkill} />
           <Notebook view={view} lang={lang} onNavigate={onNavigate} />

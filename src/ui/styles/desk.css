@@ -112,20 +112,3 @@
   bottom: calc(clamp(1rem, 3vw, 2.5rem) + var(--safe-bottom));
 }
 
-/* Mug easter egg */
-
-.ov-root .ov-coffeeNote {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  width: fit-content;
-  max-width: 34rem;
-  margin-bottom: 0.75rem;
-  padding: 0.6rem 0.9rem;
-  font-weight: 500;
-  background: var(--paper);
-  border: 1px solid var(--graphite-soft);
-  border-radius: 2px;
-  animation: ov-rise 220ms ease-out;
-}

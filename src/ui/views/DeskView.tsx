@@ -1,17 +1,14 @@
 import type { CSSProperties } from 'react'
 import { profile, type View } from '../../content'
-import type { CoffeeNote } from '../../lib/useCoffee'
-import { CoffeeNoteCard } from '../components/CoffeeNoteCard'
 import { LangSwitch } from '../components/LangSwitch'
 import { SectionNav } from '../components/SectionNav'
 import { useLang } from '../LangContext'
 
 type Props = {
-  coffeeNote: CoffeeNote | null
   onNavigate: (view: View) => void
 }
 
-export function DeskView({ coffeeNote, onNavigate }: Props) {
+export function DeskView({ onNavigate }: Props) {
   const { lang } = useLang()
   return (
     <>
@@ -47,7 +44,6 @@ export function DeskView({ coffeeNote, onNavigate }: Props) {
       </header>
       <LangSwitch className="ov-deskLang" />
       <div className="ov-deskFoot">
-        <CoffeeNoteCard note={coffeeNote} onNavigate={onNavigate} />
         <SectionNav view="desk" onNavigate={onNavigate} className="ov-deskNav" />
       </div>
     </>

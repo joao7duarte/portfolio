@@ -1,8 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { RoundedBox } from '@react-three/drei'
-import { useFrame, useThree } from '@react-three/fiber'
-import type { Group, Mesh, MeshStandardMaterial, Object3D, PointLight, SpotLight } from 'three'
-import { useReducedMotion } from './CameraRig'
+import type { Group, Mesh, Object3D, SpotLight } from 'three'
 import { Chair } from './Chair'
 import { Tower } from './Tower'
 import { DESK_TOP, DESK_WIDTH } from './dims'
@@ -18,13 +16,12 @@ const LAMP_INTENSITY = 5.5
 /** Warm glow around the bulb that lights the room beyond the spot's pool. */
 const BULB_INTENSITY = 2.6
 const SHADE_GLOW = 0.55
-const DIM_MS = 2000
 
 /**
  * Cozy evening room: plaster walls on three sides, rug, desk, lamp and quiet props.
  * Nothing here is clickable: raycasting is switched off so props never block the menu objects.
  */
-export function Room({ lampDimId }: { lampDimId: number }) {
+export function Room() {
   const root = useRef<Group>(null)
   useLayoutEffect(() => {
     root.current?.traverse((o) => {
@@ -37,7 +34,7 @@ export function Room({ lampDimId }: { lampDimId: number }) {
       <Shell />
       <Rug />
       <Desk />
-      <Lamp dimId={lampDimId} />
+      <Lamp />
       {/* pushed back and swiveled out, as if someone just got up; to the camera's left of the desk so it hides nothing */}
       <Chair position={[-2.15, 0, 1.55]} rotation={1.2} />
       {/* under the right side of the desk, front and glass side towards the camera */}
@@ -115,34 +112,12 @@ function Desk() {
 }
 
 /** Desk lamp with a real warm spot light that makes a soft pool on the desk. No shadow map, so it stays cheap. */
-function Lamp({ dimId }: { dimId: number }) {
+function Lamp() {
   const spot = useRef<SpotLight>(null)
-  const bulb = useRef<PointLight>(null)
   const target = useRef<Object3D>(null)
-  const shade = useRef<MeshStandardMaterial>(null)
-  const dimStart = useRef<number | null>(null)
-  const invalidate = useThree((s) => s.invalidate)
-  const reduced = useReducedMotion()
   useEffect(() => {
     if (spot.current && target.current) spot.current.target = target.current
   }, [])
-  useEffect(() => {
-    if (dimId > 0 && !reduced) {
-      dimStart.current = performance.now()
-      invalidate()
-    }
-  }, [dimId, reduced, invalidate])
-  // the lamp fades down and back up once
-  useFrame((state) => {
-    if (dimStart.current === null) return
-    const p = Math.min(1, (performance.now() - dimStart.current) / DIM_MS)
-    const light = 1 - 0.85 * Math.sin(p * Math.PI)
-    if (spot.current) spot.current.intensity = LAMP_INTENSITY * light
-    if (bulb.current) bulb.current.intensity = BULB_INTENSITY * light
-    if (shade.current) shade.current.emissiveIntensity = SHADE_GLOW * light
-    if (p >= 1) dimStart.current = null
-    state.invalidate()
-  })
   const metal = <meshStandardMaterial color={GRAPHITE} roughness={0.45} metalness={0.3} />
   return (
     <group>
@@ -162,7 +137,7 @@ function Lamp({ dimId }: { dimId: number }) {
           </mesh>
           <mesh position={[0, 0.22, 0]}>
             <cylinderGeometry args={[0.035, 0.09, 0.15, 32, 1, true]} />
-            <meshStandardMaterial ref={shade} color="#f0dcb8" emissive="#ffb766" emissiveIntensity={SHADE_GLOW} roughness={0.8} side={2} />
+            <meshStandardMaterial color="#f0dcb8" emissive="#ffb766" emissiveIntensity={SHADE_GLOW} roughness={0.8} side={2} />
           </mesh>
           <mesh position={[0, 0.17, 0]}>
             <sphereGeometry args={[0.028, 16, 12]} />
@@ -170,7 +145,7 @@ function Lamp({ dimId }: { dimId: number }) {
           </mesh>
         </group>
       </group>
-      <pointLight ref={bulb} position={[LAMP_POS[0] + 0.15, DESK_TOP + 0.6, LAMP_POS[2] + 0.1]} color="#ffb35e" intensity={BULB_INTENSITY} distance={6} decay={1.6} />
+      <pointLight position={[LAMP_POS[0] + 0.15, DESK_TOP + 0.6, LAMP_POS[2] + 0.1]} color="#ffb35e" intensity={BULB_INTENSITY} distance={6} decay={1.6} />
       <spotLight
         ref={spot}
         position={[LAMP_POS[0] + 0.08, DESK_TOP + 0.52, LAMP_POS[2]]}

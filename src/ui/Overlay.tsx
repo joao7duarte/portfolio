@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 import { strings, type Lang, type View } from '../content'
-import type { CoffeeNote } from '../lib/useCoffee'
 import { LangContext } from './LangContext'
 import { ContactContent } from './views/ContactContent'
 import { DeskView } from './views/DeskView'
@@ -14,7 +13,6 @@ type Props = {
   view: View
   lang: Lang
   activeSkillId: string | null
-  coffeeNote: CoffeeNote | null
   onNavigate: (view: View) => void
   onSelectSkill: (id: string | null) => void
   onLangChange: (lang: Lang) => void
@@ -27,7 +25,7 @@ function prefersReducedMotion() {
   )
 }
 
-export function Overlay({ view, lang, activeSkillId, coffeeNote, onNavigate, onSelectSkill, onLangChange }: Props) {
+export function Overlay({ view, lang, activeSkillId, onNavigate, onSelectSkill, onLangChange }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const first = useRef(true)
 
@@ -59,7 +57,7 @@ export function Overlay({ view, lang, activeSkillId, coffeeNote, onNavigate, onS
   return (
     <LangContext.Provider value={{ lang, setLang: onLangChange }}>
       <div className="ov-root" ref={rootRef}>
-        {view === 'desk' && <DeskView coffeeNote={coffeeNote} onNavigate={onNavigate} />}
+        {view === 'desk' && <DeskView onNavigate={onNavigate} />}
 
         {view === 'projects' && (
           <ProjectsView view={view} activeSkillId={activeSkillId} onNavigate={onNavigate} />
