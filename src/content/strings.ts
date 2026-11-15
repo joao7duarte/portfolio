@@ -5,6 +5,9 @@ export const strings = {
   en: {
     pageTitle: 'decastro.dev | João Gabriel Duarte',
     sections: 'Sections',
+    about: 'About',
+    aboutMe: 'About me',
+    getInTouch: 'Get in touch',
     projects: 'Projects',
     skills: 'Skills',
     experience: 'Experience',
@@ -30,6 +33,9 @@ export const strings = {
   pt: {
     pageTitle: 'decastro.dev | João Gabriel Duarte',
     sections: 'Seções',
+    about: 'Sobre',
+    aboutMe: 'Sobre mim',
+    getInTouch: 'Fale comigo',
     projects: 'Projetos',
     skills: 'Habilidades',
     experience: 'Experiência',

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { strings, type Lang, type View } from '../content'
 import { LangContext } from './LangContext'
+import { AboutContent } from './views/AboutContent'
 import { ContactContent } from './views/ContactContent'
 import { DeskView } from './views/DeskView'
 import { ExperienceContent } from './views/ExperienceContent'
@@ -63,7 +64,7 @@ export function Overlay({ view, lang, activeSkillId, onNavigate, onSelectSkill, 
           <ProjectsView view={view} activeSkillId={activeSkillId} onNavigate={onNavigate} />
         )}
 
-        {(view === 'skills' || view === 'experience' || view === 'contact') && (
+        {(view === 'about' || view === 'skills' || view === 'experience' || view === 'contact') && (
           <PanelView view={view} title={strings[lang][view]} onNavigate={onNavigate}>
             {view === 'skills' && (
               <SkillsContent
@@ -72,6 +73,7 @@ export function Overlay({ view, lang, activeSkillId, onNavigate, onSelectSkill, 
                 onNavigate={onNavigate}
               />
             )}
+            {view === 'about' && <AboutContent onNavigate={onNavigate} />}
             {view === 'experience' && <ExperienceContent />}
             {view === 'contact' && <ContactContent />}
           </PanelView>

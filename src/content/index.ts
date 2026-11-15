@@ -1,5 +1,6 @@
 export * from './types'
 export * from './profile'
+export * from './about'
 export * from './skills'
 export * from './projects'
 export * from './experience'

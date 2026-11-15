@@ -1,7 +1,7 @@
 import type { View } from '../../content'
 import { useLang } from '../LangContext'
 
-const SECTIONS: Exclude<View, 'desk'>[] = ['projects', 'skills', 'experience', 'contact']
+const SECTIONS: Exclude<View, 'desk'>[] = ['about', 'projects', 'skills', 'experience', 'contact']
 
 export function SectionNav({
   view,

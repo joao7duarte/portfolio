@@ -97,7 +97,7 @@ export function StudioScene({ view, lang, activeSkillId, onNavigate, onSelectSki
           <FirstFrame />
           <CameraRig view={view} />
           <Room />
-          <Mug position={[-0.9, DESK_TOP, -0.2]} steaming={view === 'desk'} />
+          <Mug view={view} lang={lang} onNavigate={onNavigate} />
           <Monitor view={view} lang={lang} onNavigate={onNavigate} />
           <Keyboard view={view} lang={lang} activeSkillId={activeSkillId} onNavigate={onNavigate} onSelectSkill={onSelectSkill} />
           <Notebook view={view} lang={lang} onNavigate={onNavigate} />

@@ -1,4 +1,4 @@
-export type View = 'desk' | 'projects' | 'skills' | 'experience' | 'contact'
+export type View = 'desk' | 'about' | 'projects' | 'skills' | 'experience' | 'contact'
 
 export type Lang = 'en' | 'pt'
 

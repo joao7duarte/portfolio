@@ -1,0 +1,44 @@
+/* About */
+
+/* the childhood photo sits like a print, slightly turned */
+.ov-about-photo {
+  margin: 0;
+  width: 100%;
+  max-width: 20rem;
+  padding: 0.6rem 0.6rem 0.9rem;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  transform: rotate(-1.5deg);
+}
+
+.ov-about-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ov-about-photo figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--graphite-soft);
+}
+
+.ov-about-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 60ch;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.ov-about-cta {
+  align-self: flex-start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ov-about-photo {
+    transform: none;
+  }
+}

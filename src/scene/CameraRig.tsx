@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef, useState, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Vector3 } from 'three'
 import type { View } from '../content'
-import { DESK_TOP } from './dims'
+import { DESK_TOP, MUG_POS } from './dims'
 import { KEYBOARD_POS } from './Keyboard'
 import { MONITOR_POS, NOTEBOOK_POS, NOTEBOOK_ROT, PHONE_POS, PHONE_ROT } from './Gadgets'
 
@@ -41,6 +41,7 @@ const SPECS: Record<View, Spec> = {
   desk: { center: v(0, DESK_FULL_H / 2, 0), half: v(1.7, DESK_FULL_H / 2, 0.7), dir: v(0.5, 0.5, 1), pad: 1.02, padNarrow: 1.0, panel: false },
   projects: { center: v(MONITOR_POS[0], MONITOR_POS[1] + 0.72, MONITOR_POS[2] + 0.03), half: v(0.8, 0.475, 0.03), dir: v(0.08, 0.03, 1), pad: 1.06, panel: false },
   skills: { center: at(KEYBOARD_POS, 0.03), half: v(0.9, 0.03, 0.3), dir: v(0, 1, 0.3), pad: 1.3, panel: true },
+  about: { center: at(MUG_POS, 0.18), half: v(0.2, 0.2, 0.2), dir: v(0, 0.55, 1), pad: 1.5, minSize: 1.0, panel: true },
   experience: { center: at(NOTEBOOK_POS, 0.03), half: rot(0.25, 0.03, 0.33, NOTEBOOK_ROT), dir: v(0, 1, 0.3), pad: 1.5, minSize: 1.0, panel: true },
   contact: { center: at(PHONE_POS, 0.02), half: rot(0.1, 0.03, 0.2, PHONE_ROT), dir: v(0, 1, 0.3), pad: 1.5, minSize: 1.0, panel: true },
 }
