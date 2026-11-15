@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { CanvasTexture, SRGBColorSpace } from 'three'
 import { SKILL_ICONS } from './skillIcons'
-import { ACCENT, FLOOR, FONT, GRAPHITE, PAPER, PLASTER } from './palette'
+import { ACCENT, FONT, PAPER } from './palette'
 
 type Draw = (ctx: CanvasRenderingContext2D, w: number, h: number) => void
 
@@ -113,75 +113,129 @@ export function useChipTexture(text: string) {
   )
 }
 
-/** Picture of a few project windows, shown on the monitor. */
+/** Real lines from src/scene/Mug.tsx (16-34), the code that makes the mug's steam rise, shown on the monitor. */
+const SCREEN_CODE = {
+  file: 'Mug.tsx',
+  firstLine: 16,
+  lines: [
+    'export function Mug({ position, steaming }: { position: [number, number, number]; steaming: boolean }) {',
+    '  const invalidate = useThree((s) => s.invalidate)',
+    '  const reduced = useReducedMotion()',
+    '  // steam rises on the desk view, unless the visitor turned animations off',
+    '  const active = steaming && !reduced',
+    '',
+    '  const wisps = useRef<Group>(null)',
+    '  const wispMats = useRef<(MeshBasicMaterial | null)[]>([])',
+    '',
+    '  useEffect(() => {',
+    '    if (!active) {',
+    '      invalidate()',
+    '      return',
+    '    }',
+    '    const t = window.setInterval(() => {',
+    '      if (!document.hidden) invalidate()',
+    '    }, 1000 / WISP_FPS)',
+    '    return () => window.clearInterval(t)',
+    '  }, [active, invalidate])',
+  ],
+}
+
+/** Soft, illustrated syntax colours: each token is drawn as a pill, to match the room's drawn style. */
+const SYNTAX = {
+  keyword: '#e48a6a',
+  storage: '#7fb3d5',
+  fn: '#e8c872',
+  type: '#6cc4a4',
+  variable: '#d9d2c5',
+  constant: '#a7d6f0',
+  number: '#b9d98a',
+  string: '#e8a87c',
+  comment: '#4caf50',
+  plain: '#6b625c',
+}
+const KEYWORDS = new Set(['export', 'return', 'if', 'import', 'from'])
+const STORAGE = new Set(['function', 'const', 'let', 'null', 'true', 'false', 'number', 'boolean'])
+
+/** Splits one line of TypeScript into coloured tokens. Small, but enough for the snippet above. */
+function highlight(line: string): { text: string; color: string; start: number }[] {
+  const out: { text: string; color: string; start: number }[] = []
+  const comment = line.indexOf('//')
+  const code = comment >= 0 ? line.slice(0, comment) : line
+  const re = /([A-Za-z_$][\w$]*)|(\d+(?:\.\d+)?)|('[^']*'|"[^"]*")|(\s+)|(.)/g
+  let m: RegExpExecArray | null
+  while ((m = re.exec(code))) {
+    const [tok, word, num, str, space] = m
+    if (space) continue
+    let color = SYNTAX.plain
+    if (word) {
+      const next = code.slice(re.lastIndex).trimStart()[0]
+      if (KEYWORDS.has(word)) color = SYNTAX.keyword
+      else if (STORAGE.has(word)) color = SYNTAX.storage
+      else if (next === '(' || (next === '<' && /^use/.test(word))) color = SYNTAX.fn
+      else if (/^[A-Z][A-Z0-9_]+$/.test(word)) color = SYNTAX.constant
+      else if (/^[A-Z]/.test(word)) color = SYNTAX.type
+      else color = SYNTAX.variable
+    } else if (num) color = SYNTAX.number
+    else if (str) color = SYNTAX.string
+    out.push({ text: tok, color, start: m.index })
+  }
+  if (comment >= 0) out.push({ text: line.slice(comment), color: SYNTAX.comment, start: comment })
+  return out
+}
+
+/** The editor, drawn: rounded window, tabs, and the snippet as pills that keep each token's length and colour. */
+function drawEditor(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  ctx.fillStyle = '#1f1b1a'
+  ctx.fillRect(0, 0, w, h)
+
+  // tab bar with two tabs
+  ctx.fillStyle = '#2b2522'
+  ctx.fillRect(0, 0, w, 56)
+  ctx.fillStyle = '#1f1b1a'
+  pill(ctx, 24, 12, 200, 44, 12)
+  ctx.fill()
+  ctx.fillStyle = '#4caf50'
+  pill(ctx, 44, 26, 26, 14, 7)
+  ctx.fill()
+  ctx.fillStyle = '#d9d2c5'
+  pill(ctx, 80, 26, 120, 14, 7)
+  ctx.fill()
+  ctx.fillStyle = '#4a413c'
+  pill(ctx, 244, 26, 150, 14, 7)
+  ctx.fill()
+
+  // code: one pill per token, columns kept from the real source
+  const char = 11.2
+  const lineH = 30
+  const top = 88
+  const gutter = 96
+  const bar = 14
+  SCREEN_CODE.lines.forEach((line, i) => {
+    const y = top + i * lineH
+    // line number
+    const digits = String(SCREEN_CODE.firstLine + i).length
+    ctx.fillStyle = i === 3 ? '#8c837c' : '#4a413c'
+    pill(ctx, gutter - 30 - digits * char, y, digits * char, bar, bar / 2)
+    ctx.fill()
+    for (const t of highlight(line)) {
+      const x = gutter + t.start * char
+      if (x > w - 20) continue
+      const width = Math.min(t.text.length * char - 3, w - 20 - x)
+      ctx.fillStyle = t.color
+      // punctuation is quieter and thinner than words
+      const thin = t.color === SYNTAX.plain
+      pill(ctx, x, y + (thin ? 3 : 0), Math.max(width, 6), thin ? bar - 6 : bar, (thin ? bar - 6 : bar) / 2)
+      ctx.fill()
+    }
+  })
+  // the cursor, at the end of the comment line
+  ctx.fillStyle = '#f2f2f2'
+  ctx.fillRect(gutter + SCREEN_CODE.lines[3].length * char + 4, top + 3 * lineH - 6, 3, 26)
+}
+
+/** A drawn code editor on the monitor. */
 export function useScreenTexture() {
-  return useMade(
-    () =>
-      make(1280, 720, (ctx, w) => {
-        const bg = ctx.createLinearGradient(0, 0, w, 720)
-        bg.addColorStop(0, PLASTER)
-        bg.addColorStop(1, FLOOR)
-        ctx.fillStyle = bg
-        ctx.fillRect(0, 0, w, 720)
-
-        // menu bar
-        ctx.fillStyle = PAPER
-        ctx.fillRect(0, 0, w, 44)
-        ctx.fillStyle = GRAPHITE
-        ctx.fillRect(20, 16, 90, 12)
-        ctx.fillRect(w - 160, 16, 130, 12)
-
-        const win = (x: number, y: number, ww: number, hh: number, dark: boolean) => {
-          ctx.save()
-          ctx.shadowColor = 'rgba(35,41,46,0.28)'
-          ctx.shadowBlur = 36
-          ctx.shadowOffsetY = 14
-          ctx.fillStyle = dark ? GRAPHITE : PAPER
-          pill(ctx, x, y, ww, hh, 16)
-          ctx.fill()
-          ctx.restore()
-          ;['#e8695f', '#e8b95f', '#6fcf8a'].forEach((c, i) => {
-            ctx.fillStyle = c
-            ctx.beginPath()
-            ctx.arc(x + 28 + i * 24, y + 26, 7, 0, Math.PI * 2)
-            ctx.fill()
-          })
-        }
-
-        // window A: website
-        win(90, 110, 640, 430, false)
-        ctx.fillStyle = ACCENT
-        pill(ctx, 120, 160, 580, 150, 10)
-        ctx.fill()
-        ctx.fillStyle = '#fff'
-        ctx.fillRect(150, 200, 260, 22)
-        ctx.fillRect(150, 240, 180, 14)
-        ctx.fillStyle = '#e3d8c4'
-        for (let i = 0; i < 3; i++) {
-          pill(ctx, 120 + i * 198, 340, 184, 150, 10)
-          ctx.fill()
-        }
-
-        // window B: code
-        win(520, 250, 600, 400, true)
-        const widths = [300, 380, 220, 340, 260, 400, 180, 320]
-        widths.forEach((ww, i) => {
-          ctx.fillStyle = i % 3 === 0 ? ACCENT : '#7a6a5c'
-          ctx.fillRect(560 + (i % 2) * 36, 306 + i * 38, ww, 12)
-        })
-
-        // window C: small card
-        win(860, 100, 300, 190, false)
-        ctx.fillStyle = ACCENT
-        ctx.beginPath()
-        ctx.arc(930, 200, 42, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.fillStyle = '#e3d8c4'
-        ctx.fillRect(995, 180, 130, 14)
-        ctx.fillRect(995, 210, 90, 14)
-      }),
-    'screen',
-  )
+  return useMade(() => make(1280, 720, drawEditor), 'screen')
 }
 
 export function usePhoneTexture() {
