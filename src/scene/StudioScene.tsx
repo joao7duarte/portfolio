@@ -70,7 +70,7 @@ export function StudioScene({ view, lang, activeSkillId, onNavigate, onSelectSki
           frameloop="demand"
           dpr={[1, 3]}
           gl={{ antialias: true, toneMapping: NoToneMapping }}
-          camera={{ fov: FOV, near: 0.1, far: 60, position: [3, 3, 6] }}
+          camera={{ fov: FOV, near: 0.1, far: 90, position: [3, 3, 6] }}
         >
           <color attach="background" args={[PLASTER]} />
           {/* night: the room is lit only by the desk lamp (in Room) and the window; a faint fill keeps shapes readable */}

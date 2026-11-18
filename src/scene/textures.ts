@@ -266,45 +266,54 @@ export function usePhoneTexture() {
 }
 
 /** Woven rug: warm base, fine thread lines and two borders. Transparent rounded corners. */
-/** Night city seen through a window, out of focus: a dusk gradient and soft round light blurs (bokeh). */
-export function useWindowTexture() {
+/** Size and place of the night sky behind the city (Room.tsx), so the moon lands in the window from the desk view. */
+export const SKY = { w: 110, h: 70, x: -12, y: 2, z: -40 }
+const MOON = { x: -15, y: -2.6, r: 1.6 }
+
+/** Night sky: deep blue fading to a warm city haze at the horizon, stars and a soft moon. */
+export function useSkyTexture() {
   return useMade(
     () =>
-      make(1024, 680, (ctx, w, h) => {
+      make(1024, 640, (ctx, w, h) => {
+        // world point on the sky plane to canvas pixels
+        const px = (x: number) => ((x - (SKY.x - SKY.w / 2)) / SKY.w) * w
+        const py = (y: number) => ((SKY.y + SKY.h / 2 - y) / SKY.h) * h
         const sky = ctx.createLinearGradient(0, 0, 0, h)
-        sky.addColorStop(0, '#0d1424')
-        sky.addColorStop(0.6, '#1d2438')
-        sky.addColorStop(1, '#3b2c34')
+        sky.addColorStop(0, '#070b16')
+        sky.addColorStop(0.45, '#111a30')
+        sky.addColorStop(0.6, '#1d2540')
+        sky.addColorStop(0.72, '#3b2c38')
+        sky.addColorStop(1, '#2a1f26')
         ctx.fillStyle = sky
         ctx.fillRect(0, 0, w, h)
-        // dark, blurred building shapes
-        const rand = seeded(7)
-        ctx.fillStyle = 'rgba(8,10,18,0.55)'
-        for (let x = 0; x < w; ) {
-          const bw = 60 + rand() * 120
-          const bh = h * (0.25 + rand() * 0.45)
-          ctx.fillRect(x, h - bh, bw - 6, bh)
-          x += bw
-        }
-        // bokeh: warm street and window lights, a few cool ones and one in the brand green
-        const colors = ['255,196,120', '255,170,90', '255,226,170', '170,200,255', '255,140,110', '76,175,80']
-        for (let i = 0; i < 70; i++) {
+        const rand = seeded(11)
+        for (let i = 0; i < 260; i++) {
           const x = rand() * w
-          const y = h * (0.25 + rand() * 0.75)
-          const r = 14 + rand() * 46
-          const c = colors[i % 9 === 0 ? 5 : Math.floor(rand() * 5)]
-          const a = 0.18 + rand() * 0.4
-          const g = ctx.createRadialGradient(x, y, 0, x, y, r)
-          g.addColorStop(0, `rgba(${c},${a})`)
-          g.addColorStop(0.7, `rgba(${c},${a * 0.8})`)
-          g.addColorStop(1, `rgba(${c},0)`)
-          ctx.fillStyle = g
+          const y = rand() * h * 0.62
+          ctx.fillStyle = `rgba(230,236,255,${0.25 + rand() * 0.6})`
+          ctx.fillRect(x, y, rand() < 0.15 ? 2 : 1, rand() < 0.15 ? 2 : 1)
+        }
+        const mx = px(MOON.x)
+        const my = py(MOON.y)
+        const mr = (MOON.r / SKY.w) * w
+        const halo = ctx.createRadialGradient(mx, my, mr, mx, my, mr * 5)
+        halo.addColorStop(0, 'rgba(190,205,255,0.35)')
+        halo.addColorStop(1, 'rgba(190,205,255,0)')
+        ctx.fillStyle = halo
+        ctx.fillRect(mx - mr * 5, my - mr * 5, mr * 10, mr * 10)
+        ctx.fillStyle = '#eef2ff'
+        ctx.beginPath()
+        ctx.arc(mx, my, mr, 0, Math.PI * 2)
+        ctx.fill()
+        // a few darker patches on the moon
+        ctx.fillStyle = 'rgba(170,180,210,0.45)'
+        for (const [dx, dy, r] of [[-0.3, -0.2, 0.28], [0.25, 0.15, 0.2], [0.05, 0.4, 0.15]]) {
           ctx.beginPath()
-          ctx.arc(x, y, r, 0, Math.PI * 2)
+          ctx.arc(mx + dx * mr, my + dy * mr, r * mr, 0, Math.PI * 2)
           ctx.fill()
         }
       }),
-    'window',
+    'sky',
   )
 }
 

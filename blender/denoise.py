@@ -9,7 +9,7 @@ import bpy
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIR = os.path.join(ROOT, 'public', 'models')
 WORK_DIR = os.environ.get('BAKE_WORK_DIR', 'D:/CodeStudies/blender-work/portfolio')
-NAMES = ['room-shell', 'room-rug', 'room-props']
+NAMES = ['room-shell', 'room-rug', 'room-props', 'room-outside']
 
 
 def compositor_tree(scene):

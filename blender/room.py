@@ -14,6 +14,7 @@ but stand-ins for them sit in the bake so they cast shadows and the screen throw
 """
 import math
 import os
+import random
 import sys
 
 import bmesh
@@ -54,7 +55,7 @@ PAPER = '#fbf6ec'
 ACCENT = '#1f5c4d'
 GLOW_GREEN = '#4caf50'
 
-ATLAS = {'shell': 2048, 'rug': 1024, 'props': 2048}
+ATLAS = {'shell': 2048, 'rug': 1024, 'props': 2048, 'outside': 1024}
 
 
 # ---------------------------------------------------------------- helpers
@@ -451,14 +452,97 @@ def plant():
 
 
 def window():
+    """Casement window set in the wall opening: walnut casing, two sashes with glass, a deep sill."""
     wood = mat('Walnut', WALNUT, 0.7)
-    W, H, T = WIN_W, WIN_H, WIN_T
-    bars = [((0, H / 2, 0.04), (W + 2 * T, T, 0.08)), ((0, -H / 2, 0.04), (W + 2 * T, T, 0.08)),
-            ((-W / 2, 0, 0.04), (T, H, 0.08)), ((W / 2, 0, 0.04), (T, H, 0.08)),
-            ((0, 0, 0.04), (0.045, H, 0.06)), ((0, 0.12, 0.04), (W, 0.045, 0.06))]
-    parts = [box('WinBar', s, wood, loc=p) for p, s in bars]
-    parts.append(box('Sill', (W + 0.3, 0.05, 0.2), wood, loc=(0, -H / 2 - 0.06, 0.1)))
-    return place(parts, loc=WIN_POS)
+    trim = mat('WalnutDark', WALNUT_DARK, 0.7)
+    W, H = WIN_W, WIN_H
+    cx, cy, wz = WIN_POS
+    parts = []
+    # casing on the wall face around the opening
+    c, ct = 0.09, 0.022
+    parts += [
+        box('Casing', (W + 2 * c, c, ct), wood, loc=(cx, cy + H / 2 + c / 2, wz + ct / 2), bevel=0.006, segments=2),
+        box('Casing', (c, H, ct), wood, loc=(cx - W / 2 - c / 2, cy, wz + ct / 2), bevel=0.006, segments=2),
+        box('Casing', (c, H, ct), wood, loc=(cx + W / 2 + c / 2, cy, wz + ct / 2), bevel=0.006, segments=2),
+    ]
+    # sill (stool) jutting into the room, with an apron under it
+    parts.append(box('Sill', (W + 0.34, 0.045, 0.26), wood, loc=(cx, cy - H / 2 - 0.0225, wz - 0.03), bevel=0.01, segments=2))
+    parts.append(box('Apron', (W + 0.14, 0.1, ct), trim, loc=(cx, cy - H / 2 - 0.095, wz + ct / 2), bevel=0.005, segments=2))
+
+    # the window unit, set halfway into the reveal
+    uz = wz - 0.09
+    f, fd = 0.05, 0.07  # outer frame width and depth
+    parts += [
+        box('Frame', (W, f, fd), wood, loc=(cx, cy + H / 2 - f / 2, uz)),
+        box('Frame', (W, f, fd), wood, loc=(cx, cy - H / 2 + f / 2, uz)),
+        box('Frame', (f, H, fd), wood, loc=(cx - W / 2 + f / 2, cy, uz)),
+        box('Frame', (f, H, fd), wood, loc=(cx + W / 2 - f / 2, cy, uz)),
+    ]
+    glass_m = bpy.data.materials.new('WindowGlass')
+    glass_m.use_nodes = True
+    glass_m.node_tree.nodes['Principled BSDF'].inputs['Alpha'].default_value = 0.0
+    glass = []
+    # two sashes side by side, each with its own frame and a transom bar near the top
+    sw, sh = (W - 2 * f) / 2, H - 2 * f
+    s, sd = 0.045, 0.05
+    for side in (-1, 1):
+        sx = cx + side * sw / 2
+        parts += [
+            box('Sash', (sw, s, sd), wood, loc=(sx, cy + sh / 2 - s / 2, uz + 0.005), bevel=0.004, segments=2),
+            box('Sash', (sw, s, sd), wood, loc=(sx, cy - sh / 2 + s / 2, uz + 0.005), bevel=0.004, segments=2),
+            box('Sash', (s, sh, sd), wood, loc=(sx - sw / 2 + s / 2, cy, uz + 0.005), bevel=0.004, segments=2),
+            box('Sash', (s, sh, sd), wood, loc=(sx + sw / 2 - s / 2, cy, uz + 0.005), bevel=0.004, segments=2),
+            box('Transom', (sw - 2 * s, 0.03, 0.035), wood, loc=(sx, cy + sh * 0.22, uz + 0.005)),
+        ]
+        glass.append(plane('WindowGlass', sw - 2 * s, sh - 2 * s, glass_m, loc=(sx, cy, uz)))
+        # handle on the meeting stiles
+        parts.append(box('Handle', (0.014, 0.09, 0.02), mat('LampMetal', GRAPHITE, 0.45, 0.3),
+                         loc=(sx - side * (sw / 2 - s / 2), cy - 0.05, uz + 0.04), bevel=0.004, segments=2))
+    return parts, glass
+
+
+def outside():
+    """The city at night seen from a high floor: blocks of flats with lit windows, rooftops in the moonlight."""
+    rng = random.Random(7)
+    facade = [mat('Facade' + c, c, 0.9) for c in ('#23262e', '#2a2a30', '#1e2129', '#2c2826')]
+    roof = mat('Roof', '#30323a', 0.9)
+    warm = mat('CityWarm', '#ffcf8a', 1.0, emit='#ffcf8a', emit_strength=3.0)
+    cool = mat('CityCool', '#bcd4ff', 1.0, emit='#bcd4ff', emit_strength=3.0)
+    base_y = -14.0
+    bodies, warm_w, cool_w = [], [], []
+    rows = [(-6.0, -6.5), (-12.0, -4.5), (-19.0, -3.0), (-27.0, -2.2)]
+    for r, (z, top_mid) in enumerate(rows):
+        x = -34.0 + rng.uniform(0, 1.5)
+        while x < 14:
+            w = rng.uniform(1.4, 3.2)
+            d = rng.uniform(1.6, 3.0)
+            top = top_mid + rng.uniform(-1.2, 1.2)
+            h = top - base_y
+            bx = x + w / 2
+            bodies.append(box('Block', (w, h, d), facade[rng.randrange(len(facade))], loc=(bx, base_y + h / 2, z - d / 2)))
+            bodies.append(box('RoofCap', (w + 0.08, 0.08, d + 0.08), roof, loc=(bx, top + 0.04, z - d / 2)))
+            if rng.random() < 0.45:
+                tw, th = rng.uniform(0.3, 0.7), rng.uniform(0.25, 0.6)
+                bodies.append(box('RoofBox', (tw, th, tw), roof, loc=(bx + rng.uniform(-w / 3, w / 3), top + th / 2 + 0.08, z - d / 2)))
+            # windows on the face towards us, a grid with some lit
+            cols = max(2, int((w - 0.3) / 0.42))
+            gap = (w - 0.3) / cols
+            y = top - 0.45
+            while y > base_y + 0.6:
+                for c in range(cols):
+                    if rng.random() < 0.42:
+                        wx = x + 0.15 + gap * (c + 0.5)
+                        target = warm_w if rng.random() < 0.8 else cool_w
+                        target.append(plane('Win', 0.26, 0.34, warm if target is warm_w else cool, loc=(wx, y, z + 0.004)))
+                y -= 0.55
+            x += w + rng.uniform(0.15, 0.6)
+    # street lamps along the roads between the rows
+    for z in (-6.6, -12.8, -19.9):
+        for i in range(14):
+            lx = -32 + i * 3.4 + rng.uniform(-0.4, 0.4)
+            warm_w.append(plane('Lamp', 0.22, 0.22, warm, loc=(lx, base_y + 1.1, z + 0.4)))
+    ground = plane('Ground', 100, 50, mat('Ground', '#14151a', 1.0), loc=(-10, base_y, -20), rot=(-math.pi / 2, 0, 0))
+    return join('Outside', bodies + [ground]), join('CityWarm', warm_w), join('CityCool', cool_w)
 
 
 def stand_ins():
@@ -617,8 +701,11 @@ def main():
     rug_obj = rug()
     tower_body, glows, glass = tower()
     lamp_parts, bulb = lamp()
-    props_obj = join('Props', desk() + chair() + tower_body + lamp_parts + books() + plant() + window())
-    glow_obj = join('Glow', glows)
+    win_parts, win_glass = window()
+    props_obj = join('Props', desk() + chair() + tower_body + lamp_parts + books() + plant() + win_parts)
+    join('WindowGlass', win_glass)
+    outside_obj, _, _ = outside()
+    join('Glow', glows)
     bulb.name = 'Bulb'
     stand_ins()
     lights()
@@ -626,11 +713,13 @@ def main():
     lightmap_uv(shell_obj, 0.004)
     lightmap_uv(rug_obj, 0.01)
     lightmap_uv(props_obj, 0.003)
+    lightmap_uv(outside_obj, 0.004)
 
     imgs = {
         'shell': bake(shell_obj, ATLAS['shell'], 'room-shell'),
         'rug': bake(rug_obj, ATLAS['rug'], 'room-rug'),
         'props': bake(props_obj, ATLAS['props'], 'room-props'),
+        'outside': bake(outside_obj, ATLAS['outside'], 'room-outside'),
     }
     os.makedirs(OUT_DIR, exist_ok=True)
     for key, img in imgs.items():
@@ -643,9 +732,9 @@ def main():
 
 def export():
     """Only what the site draws, with the lightmap as the one UV set, meshopt-compressed."""
-    names = ('Shell', 'Rug', 'Props', 'Glow', 'Bulb', 'Glass')
+    names = ('Shell', 'Rug', 'Props', 'Outside', 'Glow', 'Bulb', 'Glass', 'WindowGlass', 'CityWarm', 'CityCool')
     objs = [bpy.data.objects[n] for n in names]
-    for o in objs[:3]:
+    for o in objs[:4]:
         strip_uvs(o)
     bpy.ops.object.select_all(action='DESELECT')
     for o in objs:

@@ -2,9 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { Object3D, SpotLight } from 'three'
 import { BakedRoom } from './BakedRoom'
 import { DESK_TOP } from './dims'
-import { useWindowTexture } from './textures'
-
-const WALL_Z = -1.4
+import { SKY, useSkyTexture } from './textures'
 
 const LAMP_POS: [number, number, number] = [1.4, DESK_TOP, -0.55]
 const LAMP_INTENSITY = 5.5
@@ -20,7 +18,7 @@ export function Room() {
     <group>
       <BakedRoom />
       <LampLight />
-      <WindowView position={[-0.15, DESK_TOP + 1.3, WALL_Z]} />
+      <NightSky />
     </group>
   )
 }
@@ -48,13 +46,13 @@ function LampLight() {
   )
 }
 
-/** The night city out of focus, behind the baked window frame; unlit so its lights glow. */
-function WindowView({ position }: { position: [number, number, number] }) {
-  const view = useWindowTexture()
+/** The sky behind the baked city; unlit so the moon and stars glow. */
+function NightSky() {
+  const map = useSkyTexture()
   return (
-    <mesh position={[position[0], position[1], position[2] - 0.05]} raycast={() => {}}>
-      <planeGeometry args={[2.2, 1.45]} />
-      <meshBasicMaterial map={view} toneMapped={false} />
+    <mesh position={[SKY.x, SKY.y, SKY.z]} raycast={() => {}}>
+      <planeGeometry args={[SKY.w, SKY.h]} />
+      <meshBasicMaterial map={map} toneMapped={false} />
     </mesh>
   )
 }
