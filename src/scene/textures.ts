@@ -266,56 +266,6 @@ export function usePhoneTexture() {
 }
 
 /** Woven rug: warm base, fine thread lines and two borders. Transparent rounded corners. */
-export function useRugTexture() {
-  return useMade(
-    () =>
-      make(1024, 736, (ctx, w, h) => {
-        ctx.beginPath()
-        ctx.roundRect(0, 0, w, h, 26)
-        ctx.clip()
-        ctx.fillStyle = '#c99d72'
-        ctx.fillRect(0, 0, w, h)
-        ctx.strokeStyle = 'rgba(90,60,30,0.10)'
-        ctx.lineWidth = 2
-        for (let x = 0; x < w; x += 7) {
-          ctx.beginPath()
-          ctx.moveTo(x, 0)
-          ctx.lineTo(x, h)
-          ctx.stroke()
-        }
-        ctx.strokeStyle = 'rgba(255,240,215,0.10)'
-        for (let y = 0; y < h; y += 9) {
-          ctx.beginPath()
-          ctx.moveTo(0, y)
-          ctx.lineTo(w, y)
-          ctx.stroke()
-        }
-        ctx.strokeStyle = ACCENT
-        ctx.lineWidth = 34
-        ctx.strokeRect(40, 40, w - 80, h - 80)
-        ctx.strokeStyle = PAPER
-        ctx.lineWidth = 10
-        ctx.strokeRect(92, 92, w - 184, h - 184)
-        ctx.strokeStyle = '#a7623f'
-        ctx.lineWidth = 6
-        ctx.strokeRect(116, 116, w - 232, h - 232)
-        // row of diamonds along the middle
-        ctx.fillStyle = 'rgba(251,246,236,0.55)'
-        for (let i = 0; i < 7; i++) {
-          const cx = 190 + i * ((w - 380) / 6)
-          ctx.beginPath()
-          ctx.moveTo(cx, h / 2 - 34)
-          ctx.lineTo(cx + 26, h / 2)
-          ctx.lineTo(cx, h / 2 + 34)
-          ctx.lineTo(cx - 26, h / 2)
-          ctx.closePath()
-          ctx.fill()
-        }
-      }),
-    'rug',
-  )
-}
-
 /** Night city seen through a window, out of focus: a dusk gradient and soft round light blurs (bokeh). */
 export function useWindowTexture() {
   return useMade(

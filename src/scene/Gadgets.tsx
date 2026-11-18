@@ -1,9 +1,10 @@
-import { RoundedBox } from '@react-three/drei'
+import { useMemo } from 'react'
+import { RoundedBox, useGLTF } from '@react-three/drei'
 import { strings, type Lang, type View } from '../content'
 import { Chip } from './Chip'
 import { DESK_TOP } from './dims'
 import { Interactive } from './Interactive'
-import { ACCENT, GRAPHITE } from './palette'
+import { ACCENT } from './palette'
 import { usePhoneTexture, useScreenTexture } from './textures'
 
 export const MONITOR_POS: [number, number, number] = [0, DESK_TOP, -0.4]
@@ -24,25 +25,20 @@ function HitBox({ size, y }: { size: [number, number, number]; y: number }) {
 }
 
 const cover = <meshStandardMaterial color="#fbf6ec" roughness={0.85} />
-const graphite = <meshStandardMaterial color={GRAPHITE} roughness={0.45} metalness={0.25} />
+
+/** Modelled in Blender (blender/monitor.py): bezel, housing and stand. The screen stays a live plane here. */
+const MONITOR_URL = '/models/monitor.glb'
 
 export function Monitor({ view, lang, onNavigate }: Props) {
   const screen = useScreenTexture()
+  const gltf = useGLTF(MONITOR_URL)
+  const body = useMemo(() => gltf.scene.clone(true), [gltf])
   const desk = view === 'desk'
   return (
     <Interactive enabled={desk} onActivate={() => onNavigate('projects')} position={MONITOR_POS} grow={1.015} lift={0.01}>
       {(hovered) => (
         <>
-          <RoundedBox args={[0.5, 0.02, 0.26]} radius={0.008} smoothness={2} position={[0, 0.01, 0.02]} castShadow receiveShadow>
-            {graphite}
-          </RoundedBox>
-          <mesh position={[0, 0.23, -0.04]} castShadow>
-            <boxGeometry args={[0.07, 0.43, 0.04]} />
-            {graphite}
-          </mesh>
-          <RoundedBox args={[1.6, 0.95, 0.05]} radius={0.02} smoothness={3} position={[0, 0.72, 0]} castShadow receiveShadow>
-            {graphite}
-          </RoundedBox>
+          <primitive object={body} />
           <mesh position={[0, 0.72, 0.0256]}>
             <planeGeometry args={[1.5, 0.844]} />
             <meshBasicMaterial map={screen} toneMapped={false} color={hovered ? '#ffffff' : '#f2f2f2'} />
@@ -105,3 +101,5 @@ export function Phone({ view, lang, onNavigate }: Props) {
     </Interactive>
   )
 }
+
+useGLTF.preload(MONITOR_URL)

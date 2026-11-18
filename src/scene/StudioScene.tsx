@@ -1,4 +1,4 @@
-import { Component, useEffect, useRef, useState, type ReactNode } from 'react'
+import { Component, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { NoToneMapping } from 'three'
 import type { Lang, View } from '../content'
@@ -69,36 +69,28 @@ export function StudioScene({ view, lang, activeSkillId, onNavigate, onSelectSki
         <Canvas
           frameloop="demand"
           dpr={[1, 3]}
-          shadows
           gl={{ antialias: true, toneMapping: NoToneMapping }}
           camera={{ fov: FOV, near: 0.1, far: 60, position: [3, 3, 6] }}
         >
           <color attach="background" args={[PLASTER]} />
           {/* night: the room is lit only by the desk lamp (in Room) and the window; a faint fill keeps shapes readable */}
           <hemisphereLight args={['#c9d4ff', '#3a2e24', 0.22]} />
-          {/* cool night light coming in through the window behind the desk */}
+          {/* cool night light from the window; the room's shadows are baked, so no shadow map */}
           <directionalLight
             position={[-0.4, DESK_TOP + 3, -4]}
             intensity={0.7}
             color="#9fb4ff"
-            castShadow
-            shadow-mapSize={[2048, 2048]}
-            shadow-camera-left={-6}
-            shadow-camera-right={6}
-            shadow-camera-top={6}
-            shadow-camera-bottom={-6}
-            shadow-camera-near={0.5}
-            shadow-camera-far={24}
-            shadow-bias={-0.0004}
-            shadow-normalBias={0.02}
           />
           {/* glow just inside the window */}
           <pointLight position={[-0.15, DESK_TOP + 1.3, -1.0]} intensity={1.4} color="#8fa8ff" distance={4} decay={2} />
-          <FirstFrame />
           <CameraRig view={view} />
-          <Room />
-          <Mug view={view} lang={lang} onNavigate={onNavigate} />
-          <Monitor view={view} lang={lang} onNavigate={onNavigate} />
+          {/* the loading screen stays up until the baked room and the Blender models have loaded */}
+          <Suspense fallback={null}>
+            <Room />
+            <Mug view={view} lang={lang} onNavigate={onNavigate} />
+            <Monitor view={view} lang={lang} onNavigate={onNavigate} />
+            <FirstFrame />
+          </Suspense>
           <Keyboard view={view} lang={lang} activeSkillId={activeSkillId} onNavigate={onNavigate} onSelectSkill={onSelectSkill} />
           <Notebook view={view} lang={lang} onNavigate={onNavigate} />
           <Phone view={view} lang={lang} onNavigate={onNavigate} />

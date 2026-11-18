@@ -9,11 +9,21 @@ import { MONITOR_POS, NOTEBOOK_POS, NOTEBOOK_ROT, PHONE_POS, PHONE_ROT } from '.
 export const FOV = 32
 const TAN = Math.tan((FOV / 2) * (Math.PI / 180))
 
-/** Wide screens: HTML panel on the right. Narrow screens: panel over the bottom. */
+/** Wide screens frame the desk a little differently. */
 const WIDE_ASPECT = 1.15
-/** Share of the viewport left free by the HTML panel. */
-const FREE_WIDE = 0.55
+/** Same rule as panel.css: from here the HTML panel sits on the right, otherwise over the bottom. */
+const SIDE_PANEL_QUERY = '(min-width: 900px) and (min-aspect-ratio: 1/1)'
+/** The side panel is 40% wide but never under 26rem (panel.css). */
+const SIDE_PANEL_SHARE = 0.4
+const SIDE_PANEL_MIN_PX = 26 * 16
+/** Share of the viewport height left free by the bottom panel. */
 const FREE_NARROW = 0.52
+
+/** Share of the viewport width left free by the side panel, or null when the panel sits at the bottom. */
+function sidePanelFree(): number | null {
+  if (!window.matchMedia(SIDE_PANEL_QUERY).matches) return null
+  return 1 - Math.max(SIDE_PANEL_SHARE, SIDE_PANEL_MIN_PX / window.innerWidth)
+}
 
 /** Transition length between views, independent of frame rate. */
 const DURATION_MS = 1000
@@ -48,11 +58,12 @@ const SPECS: Record<View, Spec> = {
 
 export type Goal = { pos: Vector3; target: Vector3 }
 
-export function computeGoal(view: View, aspect: number): Goal {
+export function computeGoal(view: View, aspect: number, sideFree: number | null): Goal {
   const s = SPECS[view]
   const wide = aspect >= WIDE_ASPECT
-  const fracX = s.panel && wide ? FREE_WIDE : 1
-  const fracY = !wide && (s.panel || view === 'projects') ? FREE_NARROW : 1
+  const side = sideFree !== null
+  const fracX = s.panel && side ? sideFree : 1
+  const fracY = !side && (s.panel || view === 'projects') ? FREE_NARROW : 1
   // where the framed object should sit, as a fraction of the viewport (+x right, +y up)
   let fx = -(1 - fracX) / 2
   let fy = (1 - fracY) / 2
@@ -103,7 +114,9 @@ export function CameraRig({ view }: { view: View }) {
   const invalidate = useThree((s) => s.invalidate)
   const reduced = useReducedMotion()
 
-  const goal = useMemo(() => computeGoal(view, aspect), [view, aspect])
+  // re-read on every render: resizing the window re-renders through the canvas size above
+  const sideFree = sidePanelFree()
+  const goal = useMemo(() => computeGoal(view, aspect, sideFree), [view, aspect, sideFree])
   const curPos = useRef(new Vector3())
   const curLook = useRef(new Vector3())
   const startPos = useRef(new Vector3())

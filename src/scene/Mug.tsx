@@ -1,14 +1,15 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import type { Group, MeshBasicMaterial } from 'three'
+import { useGLTF } from '@react-three/drei'
+import { Mesh, type Group, type MeshBasicMaterial } from 'three'
 import { strings, type Lang, type View } from '../content'
 import { useReducedMotion } from './CameraRig'
 import { Chip } from './Chip'
 import { MUG_POS } from './dims'
 import { Interactive } from './Interactive'
-import { ACCENT, PAPER } from './palette'
 
-const R = 0.16
+/** Modelled in Blender (blender/mug.py): 0.32 wide, 0.35 tall, origin at the base, handle on +x. */
+const MODEL_URL = '/models/mug.glb'
 const H = 0.35
 /** Wisps of steam that rise all the time, each a share of the loop apart. */
 const WISPS = [0, 0.25, 0.5, 0.75]
@@ -60,34 +61,23 @@ export function Mug({ view, lang, onNavigate }: Props) {
     })
   })
 
-  const ceramic = <meshStandardMaterial color={PAPER} roughness={0.45} />
+  const gltf = useGLTF(MODEL_URL)
+  const model = useMemo(() => {
+    const scene = gltf.scene.clone(true)
+    scene.traverse((o) => {
+      if (o instanceof Mesh) {
+        o.castShadow = o.name !== 'Coffee'
+        o.receiveShadow = true
+      }
+    })
+    return scene
+  }, [gltf])
+
   return (
     <Interactive enabled={desk} onActivate={() => onNavigate('about')} position={MUG_POS} grow={1.04}>
       {(hovered) => (
         <>
-          <mesh position={[0, H / 2, 0]} castShadow receiveShadow>
-            <cylinderGeometry args={[R, R * 0.92, H, 40, 1, true]} />
-            <meshStandardMaterial color={PAPER} roughness={0.45} side={2} />
-          </mesh>
-          <mesh position={[0, 0.006, 0]} receiveShadow>
-            <cylinderGeometry args={[R * 0.92, R * 0.92, 0.012, 40]} />
-            {ceramic}
-          </mesh>
-          {/* coffee */}
-          <mesh position={[0, H - 0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            <circleGeometry args={[R * 0.97, 40]} />
-            <meshStandardMaterial color="#4a2c1d" roughness={0.3} />
-          </mesh>
-          {/* accent band: outside only */}
-          <mesh position={[0, H * 0.55, 0]}>
-            <cylinderGeometry args={[R * 0.975, R * 0.965, 0.05, 40, 1, true]} />
-            <meshStandardMaterial color={ACCENT} roughness={0.6} />
-          </mesh>
-          {/* handle: a half ring on the +x side */}
-          <mesh position={[R * 0.96, H * 0.5, 0]} rotation={[0, 0, -Math.PI / 2]} castShadow>
-            <torusGeometry args={[0.095, 0.022, 12, 24, Math.PI]} />
-            {ceramic}
-          </mesh>
+          <primitive object={model} />
           <group ref={wisps} visible={false}>
             {WISPS.map((_, i) => (
               <mesh key={i} raycast={() => {}}>
@@ -117,3 +107,5 @@ export function Mug({ view, lang, onNavigate }: Props) {
     </Interactive>
   )
 }
+
+useGLTF.preload(MODEL_URL)
