@@ -55,7 +55,7 @@ PAPER = '#fbf6ec'
 ACCENT = '#1f5c4d'
 GLOW_GREEN = '#4caf50'
 
-ATLAS = {'shell': 2048, 'rug': 1024, 'props': 2048, 'outside': 1024}
+ATLAS = {'shell': 2048, 'rug': 1024, 'props': 2048, 'outside': 2048}
 
 
 # ---------------------------------------------------------------- helpers
@@ -501,17 +501,91 @@ def window():
     return parts, glass
 
 
+def facade_material(color):
+    """Facade with a grid of windows painted in by the shader, some lit warm or cool.
+    Baked into the texture, so far-off windows blend smoothly instead of flickering as tiny polygons."""
+    m = bpy.data.materials.new('Facade' + color)
+    m.use_nodes = True
+    nt = m.node_tree
+    N, L = nt.nodes, nt.links
+    bsdf = N['Principled BSDF']
+    bsdf.inputs['Roughness'].default_value = 0.9
+
+    def math(op, a, b=None):
+        n = N.new('ShaderNodeMath')
+        n.operation = op
+        for i, v in enumerate((a, b)):
+            if v is None:
+                continue
+            if isinstance(v, (int, float)):
+                n.inputs[i].default_value = v
+            else:
+                L.new(v, n.inputs[i])
+        return n.outputs[0]
+
+    def vmath(op, a, b=None, scale=None):
+        n = N.new('ShaderNodeVectorMath')
+        n.operation = op
+        if isinstance(a, tuple):
+            n.inputs[0].default_value = a
+        else:
+            L.new(a, n.inputs[0])
+        if b is not None:
+            if isinstance(b, tuple):
+                n.inputs[1].default_value = b
+            else:
+                L.new(b, n.inputs[1])
+        if scale is not None:
+            if isinstance(scale, (int, float)):
+                n.inputs['Scale'].default_value = scale
+            else:
+                L.new(scale, n.inputs['Scale'])
+        return n.outputs[0]
+
+    coord = N.new('ShaderNodeTexCoord').outputs['Object']
+    cells = vmath('MULTIPLY', coord, (1 / 0.42, 1 / 0.55, 1.0))
+    cell = vmath('FLOOR', cells)
+    frac = N.new('ShaderNodeSeparateXYZ')
+    L.new(vmath('FRACTION', cells), frac.inputs[0])
+    fx, fy = frac.outputs[0], frac.outputs[1]
+    in_x = math('MULTIPLY', math('GREATER_THAN', fx, 0.22), math('LESS_THAN', fx, 0.78))
+    in_y = math('MULTIPLY', math('GREATER_THAN', fy, 0.25), math('LESS_THAN', fy, 0.78))
+    normal = N.new('ShaderNodeSeparateXYZ')
+    L.new(N.new('ShaderNodeNewGeometry').outputs['Normal'], normal.inputs[0])
+    facing = math('GREATER_THAN', normal.outputs[2], 0.5)  # only the faces towards the viewer
+    window = math('MULTIPLY', math('MULTIPLY', in_x, in_y), facing)
+
+    noise = N.new('ShaderNodeTexWhiteNoise')
+    noise.noise_dimensions = '3D'
+    L.new(cell, noise.inputs['Vector'])
+    lit = math('GREATER_THAN', noise.outputs['Value'], 0.6)
+    tint = N.new('ShaderNodeSeparateColor')
+    L.new(noise.outputs['Color'], tint.inputs[0])
+    warm_k = math('GREATER_THAN', tint.outputs[0], 0.2)
+    cool_k = math('SUBTRACT', 1.0, warm_k)
+    warm = lin('#ffcf8a')[:3]
+    cool = lin('#bcd4ff')[:3]
+    glow = vmath('ADD', vmath('SCALE', warm, scale=warm_k), vmath('SCALE', cool, scale=cool_k))
+    # brightness varies a little from window to window
+    level = math('ADD', 0.55, math('MULTIPLY', tint.outputs[1], 0.45))
+    strength = math('MULTIPLY', math('MULTIPLY', window, lit), math('MULTIPLY', level, 5.0))
+    L.new(glow, bsdf.inputs['Emission Color'])
+    L.new(strength, bsdf.inputs['Emission Strength'])
+    # unlit panes read a little darker than the wall
+    shade = math('SUBTRACT', 1.0, math('MULTIPLY', window, 0.45))
+    L.new(vmath('SCALE', lin(color)[:3], scale=shade), bsdf.inputs['Base Color'])
+    return m
+
+
 def outside():
     """The city at night seen from a high floor: blocks of flats with lit windows, rooftops in the moonlight."""
     rng = random.Random(7)
-    facade = [mat('Facade' + c, c, 0.9) for c in ('#23262e', '#2a2a30', '#1e2129', '#2c2826')]
+    facade = [facade_material(c) for c in ('#23262e', '#2a2a30', '#1e2129', '#2c2826')]
     roof = mat('Roof', '#30323a', 0.9)
-    warm = mat('CityWarm', '#ffcf8a', 1.0, emit='#ffcf8a', emit_strength=3.0)
-    cool = mat('CityCool', '#bcd4ff', 1.0, emit='#bcd4ff', emit_strength=3.0)
-    base_y = -14.0
-    bodies, warm_w, cool_w = [], [], []
+    base_y = -10.0  # nothing below this is ever seen through the window
+    bodies = []
     rows = [(-6.0, -6.5), (-12.0, -4.5), (-19.0, -3.0), (-27.0, -2.2)]
-    for r, (z, top_mid) in enumerate(rows):
+    for z, top_mid in rows:
         x = -34.0 + rng.uniform(0, 1.5)
         while x < 14:
             w = rng.uniform(1.4, 3.2)
@@ -524,25 +598,18 @@ def outside():
             if rng.random() < 0.45:
                 tw, th = rng.uniform(0.3, 0.7), rng.uniform(0.25, 0.6)
                 bodies.append(box('RoofBox', (tw, th, tw), roof, loc=(bx + rng.uniform(-w / 3, w / 3), top + th / 2 + 0.08, z - d / 2)))
-            # windows on the face towards us, a grid with some lit
-            cols = max(2, int((w - 0.3) / 0.42))
-            gap = (w - 0.3) / cols
-            y = top - 0.45
-            while y > base_y + 0.6:
-                for c in range(cols):
-                    if rng.random() < 0.42:
-                        wx = x + 0.15 + gap * (c + 0.5)
-                        target = warm_w if rng.random() < 0.8 else cool_w
-                        target.append(plane('Win', 0.26, 0.34, warm if target is warm_w else cool, loc=(wx, y, z + 0.004)))
-                y -= 0.55
             x += w + rng.uniform(0.15, 0.6)
-    # street lamps along the roads between the rows
-    for z in (-6.6, -12.8, -19.9):
-        for i in range(14):
-            lx = -32 + i * 3.4 + rng.uniform(-0.4, 0.4)
-            warm_w.append(plane('Lamp', 0.22, 0.22, warm, loc=(lx, base_y + 1.1, z + 0.4)))
-    ground = plane('Ground', 100, 50, mat('Ground', '#14151a', 1.0), loc=(-10, base_y, -20), rot=(-math.pi / 2, 0, 0))
-    return join('Outside', bodies + [ground]), join('CityWarm', warm_w), join('CityCool', cool_w)
+    city = join('Outside', bodies)
+    # drop faces that never face the window (backs and bottoms), so the atlas spends its pixels on what shows
+    bm = bmesh.new()
+    bm.from_mesh(city.data)
+    hidden = [f for f in bm.faces if f.normal.z < -0.5 or f.normal.y < -0.5]
+    bmesh.ops.delete(bm, geom=hidden, context='FACES')
+    bm.to_mesh(city.data)
+    bm.free()
+    # the ground far below: flat and unlit on the site, so it stays out of the bake
+    plane('Ground', 100, 50, mat('Ground', '#14151a', 1.0), loc=(-10, base_y, -20), rot=(-math.pi / 2, 0, 0))
+    return city
 
 
 def stand_ins():
@@ -704,7 +771,7 @@ def main():
     win_parts, win_glass = window()
     props_obj = join('Props', desk() + chair() + tower_body + lamp_parts + books() + plant() + win_parts)
     join('WindowGlass', win_glass)
-    outside_obj, _, _ = outside()
+    outside_obj = outside()
     join('Glow', glows)
     bulb.name = 'Bulb'
     stand_ins()
@@ -732,7 +799,7 @@ def main():
 
 def export():
     """Only what the site draws, with the lightmap as the one UV set, meshopt-compressed."""
-    names = ('Shell', 'Rug', 'Props', 'Outside', 'Glow', 'Bulb', 'Glass', 'WindowGlass', 'CityWarm', 'CityCool')
+    names = ('Shell', 'Rug', 'Props', 'Outside', 'Glow', 'Bulb', 'Glass', 'WindowGlass', 'Ground')
     objs = [bpy.data.objects[n] for n in names]
     for o in objs[:4]:
         strip_uvs(o)

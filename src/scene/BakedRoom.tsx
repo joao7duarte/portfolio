@@ -14,7 +14,9 @@ const MAPS = {
   Outside: '/models/room-outside.webp',
 } as const
 /** Parts that glow and carry no lightmap. */
-const GLOWS: Record<string, string> = { Glow: '#4caf50', Bulb: '#ffe2b0', CityWarm: '#ffcf8a', CityCool: '#bcd4ff' }
+const GLOWS: Record<string, string> = { Glow: '#4caf50', Bulb: '#ffe2b0' }
+/** Flat, unlit parts. */
+const FLATS: Record<string, string> = { Ground: '#101116' }
 
 export function BakedRoom() {
   const gltf = useGLTF(MODEL_URL)
@@ -40,6 +42,8 @@ export function BakedRoom() {
       } else if (o.name === 'WindowGlass') {
         // barely there: a cool sheen so the panes read as glass
         o.material = new MeshBasicMaterial({ color: '#9fb4ff', transparent: true, opacity: 0.07, depthWrite: false })
+      } else if (FLATS[o.name]) {
+        o.material = new MeshBasicMaterial({ color: FLATS[o.name] })
       } else if (GLOWS[o.name]) {
         o.material = new MeshBasicMaterial({ color: new Color(GLOWS[o.name]), toneMapped: false })
       }
